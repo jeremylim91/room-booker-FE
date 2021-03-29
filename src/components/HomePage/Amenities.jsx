@@ -1,6 +1,8 @@
 import React from 'react'
-import Title from '/Title.jsx'
-import { MdLocalDrink, AiOutlineFundProjectionScreen, FaConciergeBell } from "react-icons/fa";
+import Title from './Title.jsx'
+import { FaConciergeBell } from "react-icons/fa";
+import { MdLocalDrink} from "react-icons/md";
+import { AiOutlineFundProjectionScreen} from "react-icons/ai";
 
 
 export default function Amenities() {
@@ -29,6 +31,7 @@ export default function Amenities() {
       },
     ]
   const DisplayAmenities= ()=>{
+    return(
     amenities.map((amenity, idx)=>{
       return(
         <article key={idx} className='amenities'>
@@ -38,7 +41,7 @@ export default function Amenities() {
         </article>
       )
     })
-  }
+    )}
   
   return (
     <section className="amenities">

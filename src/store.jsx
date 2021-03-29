@@ -141,63 +141,63 @@ export function selectListing(dispatch, listingId) {
     .then((result) => {
       // console.log(result.data.selectedListing);
       // console.log('result.data.selectedListing', result.data.selectedListing);
-      dispatch(selectListingAction(result.data.selectedListing));
+      // dispatch(selectListingAction(result.data.selectedListing));
     })
     .catch((err) => {
       console.log(err);
     });
 }
 
-export function findPurchaseCountPerListing(listingId, setProgressPercent) {
-  // console.log('findPurchaseCountPerListing listingId', listingId);
-  axios.get(`${BACKEND_URL}/purchases/count/${listingId}`).then((result) => {
-    setProgressPercent(result.data.purchaseCount);
-  });
-}
+// export function findPurchaseCountPerListing(listingId, setProgressPercent) {
+//   // console.log('findPurchaseCountPerListing listingId', listingId);
+//   axios.get(`${BACKEND_URL}/purchases/count/${listingId}`).then((result) => {
+//     setProgressPercent(result.data.purchaseCount);
+//   });
+// }
 
-export function getPurchaseCountPerListing(listingId) {
-  axios.get(`${BACKEND_URL}/purchases/count/${listingId}`).then((result) => (result.data.purchaseCount));
-}
+// export function getPurchaseCountPerListing(listingId) {
+//   axios.get(`${BACKEND_URL}/purchases/count/${listingId}`).then((result) => (result.data.purchaseCount));
+// }
 
-export function createListing(dispatch, listing) {
-  return axios.post(`${BACKEND_URL}/addlisting`, listing).then((result) => {
-    dispatch(addListingAction());
-    return result.data.listing.id;
-  });
-}
+// export function createListing(dispatch, listing) {
+//   return axios.post(`${BACKEND_URL}/addlisting`, listing).then((result) => {
+//     // dispatch(addListingAction());
+//     // return result.data.listing.id;
+//   });
+// }
 
-export function updateListing(dispatch, updatedListingData, imageFormData) {
-  // Upload the edited data to db
-  return axios.post(`${BACKEND_URL}/listings/${updatedListingData.id}/update`,
-    { updatedListingData }).then((result) =>
-  {
-    console.log('update successfully: ', result.data.updatedListing.id);
-    // Upload added images
-    return axios.post(`${BACKEND_URL}/listings/${updatedListingData.id}/update/images`, imageFormData).then((resImageUpload) => {
-      console.log('update image successfully: ', resImageUpload.data.updatedListing.id);
-      dispatch(selectListingAction(resImageUpload.data.updatedListing));
-      return resImageUpload.data.updatedListing.id;
-    })
-      .catch((err) => {
-        dispatch(selectListingAction(result.data.updatedListing));
-        return result.data.updatedListing.id;
-      }); });
-}
+// export function updateListing(dispatch, updatedListingData, imageFormData) {
+//   // Upload the edited data to db
+//   return axios.post(`${BACKEND_URL}/listings/${updatedListingData.id}/update`,
+//     { updatedListingData }).then((result) =>
+//   {
+//     console.log('update successfully: ', result.data.updatedListing.id);
+//     // Upload added images
+//     return axios.post(`${BACKEND_URL}/listings/${updatedListingData.id}/update/images`, imageFormData).then((resImageUpload) => {
+//       console.log('update image successfully: ', resImageUpload.data.updatedListing.id);
+//       // dispatch(selectListingAction(resImageUpload.data.updatedListing));
+//       return resImageUpload.data.updatedListing.id;
+//     })
+//       .catch((err) => {
+//         // dispatch(selectListingAction(result.data.updatedListing));
+//         return result.data.updatedListing.id;
+//       }); });
+// }
 
-export function recordPurchase(dispatch, uploadedFile, listingPK, qtyOrdered) {
-  // If is use {uploadedFile and CurrItemPk, req.files becomes empty obj in my purchases controller}
-  return axios.post(`${BACKEND_URL}/recordPurchase/${listingPK}/${qtyOrdered}`, uploadedFile)
-    .then(() => {
-      // what to do after store the img?
-      console.log('image url has been saved to db successfully');
-    });
-}
+// export function recordPurchase(dispatch, uploadedFile, listingPK, qtyOrdered) {
+//   // If is use {uploadedFile and CurrItemPk, req.files becomes empty obj in my purchases controller}
+//   return axios.post(`${BACKEND_URL}/recordPurchase/${listingPK}/${qtyOrdered}`, uploadedFile)
+//     .then(() => {
+//       // what to do after store the img?
+//       console.log('image url has been saved to db successfully');
+//     });
+// }
 
-export function getAllPurchasesAssociatedWUser(userName) {
-  return axios.post(`${BACKEND_URL}/allPurchases`, { userName })
-    .then(({ data }) => data)
-    .catch((error) => {
-      console.log(error);
-      window.location = '/error';
-    });
-}
+// export function getAllPurchasesAssociatedWUser(userName) {
+//   return axios.post(`${BACKEND_URL}/allPurchases`, { userName })
+//     .then(({ data }) => data)
+//     .catch((error) => {
+//       console.log(error);
+//       window.location = '/error';
+//     });
+// }
