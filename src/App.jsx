@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-// import NavbarComponent from './components/NavbarComponent.jsx';
+import NavbarComponent from './components/NavbarComponent.jsx';
 // import { GroupBuyProvider } from './store.jsx';
 
 import HomePage from './components/HomePage/HomePage.jsx'
@@ -10,7 +10,7 @@ function App() {
   return (
     // <GroupBuyProvider>
       <Router>
-        {/* <NavbarComponent /> */}
+        <NavbarComponent />
         <Switch>
           <Route exact path="/" component={HomePage} />
           {/* <Route path="/listingdetails/:listingId" component={ViewListing} /> */}
