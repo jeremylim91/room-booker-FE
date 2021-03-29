@@ -3,6 +3,7 @@ import Amenities from './Amenities.jsx'
 import Banner from './Banner.jsx'
 import Button from 'react-bootstrap/Button'
 import {Link} from 'react-router-dom'
+import '../../styles/HomePage.scss'
 
 
 export default function HomePage() {
