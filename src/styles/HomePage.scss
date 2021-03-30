@@ -1,6 +1,8 @@
+@import './_variables.scss';
+
 .banner {
   display: inline-block;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.351);
   color: var(--mainWhite);
   padding: 2rem 1rem;
   text-align: center;
@@ -20,4 +22,11 @@
     font-size: 1.2rem;
     margin-bottom: 2rem;
   }
+}
+.defaultHero{
+  min-height: calc(100vh - 66px);
+  background: url("https://www.99.co/blog/singapore/wp-content/uploads/2018/04/investing-singapore-office-space-900x386.jpg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
