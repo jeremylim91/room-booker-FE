@@ -1,7 +1,7 @@
-import React, { useReducer } from 'react';
-import { writeStorage, useLocalStorage } from '@rehooks/local-storage';
+import React, {useReducer} from 'react';
+import {writeStorage, useLocalStorage} from '@rehooks/local-storage';
 import axios from 'axios';
-import { BACKEND_URL } from './store.jsx';
+import {BACKEND_URL} from './store.jsx';
 
 /* ********************************
  * ********************************
@@ -15,13 +15,13 @@ import { BACKEND_URL } from './store.jsx';
  */
 
 // create vars tt reduce spelling errors when handling form modes
-export const formModes={
+export const formModes = {
   SELECT_ROOM: 'SELECT_ROOM',
   SELECT_DATE_TIME: 'SELECT_DATE_TIME',
   INSERT_DETAILS: 'INSERT_DETAILS',
   CONFIRMATION: 'CONFIRMATION',
   FORM_STEP: 'FORM_STEP',
-}
+};
 
 // Name of the createBookingForm
 export const CREATE_BOOKING_FORM = 'CREATE_BOOKING_FORM';
@@ -30,36 +30,33 @@ export const CREATE_BOOKING_FORM = 'CREATE_BOOKING_FORM';
 // we moved all of this data from the app component into the store
 
 export const initialFormState = {
-  title: '',
-  description: '',
-  quantity: null,
-  moq: null,
-  allowOversubscription: false,
-  usualPrice: null,
-  discountedPrice: null,
-  startDate: null,
-  endDate: null,
-  deliveryDate: null,
-  deliveryMode: null,
-  category: 'Categories',
-  lister_id: null,
-  images: [],
-  imageLocations: [],
+  roomId: '',
+  meetingDate: '',
+  startTime: null,
+  endTime: null,
+  agenda: '',
+  attendees: false,
 };
 
-// just like the todo app, define each action we want to do on the
-// data we defined above
+// Define each action to do on the data we defined above
+
+// used to load list of rooms
+const GET_ROOM_CATALOGUE = 'GET_ROOM_CATALOGUE';
 
 // Used to load initial bookings and also to reload edited bookings
 
 // define the matching reducer function
-export function createBookingReducer(state, { field, value }) {
+export function createBookingReducer(state, {field, value}) {
   return {
     ...state,
     [field]: value,
   };
 }
-
+export function getRoomCatalogueAction() {
+  return {
+    type: GET_ROOM_CATALOGUE,
+  };
+}
 /* ********************************
  * ********************************
  * ********************************
@@ -74,28 +71,42 @@ export function createBookingReducer(state, { field, value }) {
 // In this section we extract out the provider HOC
 
 export const CreateBookingContext = React.createContext(null);
-const { Provider } = CreateBookingContext;
+const {Provider} = CreateBookingContext;
 
 // export a provider HOC that contains the initalized reducer
 // pass the reducer as context to the children
 // any child component will be able to alter the state of the app
-export function CreateBookingProvider({ children }) {
-  const [formStore, dispatchBookingForm] = useReducer(createBookingReducer, initialFormState);
+export function CreateBookingProvider({children}) {
+  const [formStore, dispatchBookingForm] = useReducer(
+    createBookingReducer,
+    initialFormState
+  );
   const [formLocalStorage] = useLocalStorage(CREATE_BOOKING_FORM);
+  // check if local storage containing form progress exists
   if (!formLocalStorage) {
     writeStorage(CREATE_BOOKING_FORM, {});
   }
 
   const handleOnChange = (e) => {
-    dispatchBookingForm({ field: e.target.name, value: e.target.value });
-    writeStorage(CREATE_BOOKING_FORM, { ...formLocalStorage, [e.target.name]: e.target.value });
+    dispatchBookingForm({field: e.target.name, value: e.target.value});
+    writeStorage(CREATE_BOOKING_FORM, {
+      ...formLocalStorage,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
-    <Provider value={{
-      formStore, dispatchBookingForm, handleOnChange, formLocalStorage,
-    }}
-    >
+    <Provider
+      value={{
+        // curr/updated state:
+        formStore,
+        // dispatch fn to augment state
+        dispatchBookingForm,
+        // manage changes to text fields in form
+        handleOnChange,
+        // data saved in local storage
+        formLocalStorage,
+      }}>
       {children}
     </Provider>
   );
@@ -117,8 +128,17 @@ export function CreateBookingProvider({ children }) {
 //
 // these functions must be passed the dispatch from the current context
 
-export function loadCategories(setAllCategories) {
-  axios.get(`${BACKEND_URL}/listings`).then((result) => {
-    setAllCategories(result.data.categories);
+// export function loadCategories(setAllCategories) {
+//   axios.get(`${BACKEND_URL}/listings`).then((result) => {
+//     setAllCategories(result.data.categories);
+//   });
+// }
+
+// get all the rooms to display to user
+export function getRoomCatalogue(setRoomCatalogue) {
+  axios.get(`${BACKEND_URL}/rooms`).then(({data}) => {
+    console.log(`data returned to client from getRoomCatalogue() fn`);
+    console.log(data);
+    setRoomCatalogue(data);
   });
 }
