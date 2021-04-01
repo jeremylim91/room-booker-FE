@@ -1,10 +1,12 @@
 import './App.scss';
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import NavbarComponent from './components/NavbarComponent.jsx';
-import { RoomBookerProvider } from './store.jsx';
+import {RoomBookerProvider} from './store.jsx';
 
-import HomePage from './components/HomePage/HomePage.jsx'
+import HomePage from './components/HomePage/HomePage.jsx';
+import CreateBookingMain from './components/CreateBookingMultistepForm/CreateBookingMain.jsx';
+import {CreateBookingContext} from './createBookingStore';
 
 function App() {
   return (
@@ -13,6 +15,7 @@ function App() {
         <NavbarComponent />
         <Switch>
           <Route exact path="/" component={HomePage} />
+          <Route exact path="/createBooking" component={CreateBookingMain} />
           {/* <Route path="/listingdetails/:listingId" component={ViewListing} /> */}
           {/* <Route path="/viewAllListings" component={ViewAllListings} /> */}
           {/* Routes that require cookies/authentication to access */}
