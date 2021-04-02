@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, {useReducer} from 'react';
 import axios from 'axios';
 // import { writeStorage, useLocalStorage, deleteFromStorage } from '@rehooks/local-storage';
 
@@ -15,34 +15,31 @@ export const BACKEND_URL = 'http://localhost:3004';
 export const initialState = {
   loggedInUsername: null,
   loggedInUserId: null,
-  allUpcomingMeetings:[],
-  allMtgsForCurrUser:[],
-  detailsOfNewMeeting:[],
+  allUpcomingMeetings: [],
+  allMtgsForCurrUser: [],
+  detailsOfNewMeeting: [],
 };
 
 // just like the todo app, define each action we want to do on the
 // data we defined above
-const LOAD_UPCOMING_MEETINGS= 'LOAD_UPCOMING_MEETINGS'
-const LOAD_CURR_USER_MEETINGS= 'LOAD_CURR_USER_MEETINGS' 
-const CREATE_NEW_MEETING= 'CREATE_NEW_MEETING'
-
+const LOAD_UPCOMING_MEETINGS = 'LOAD_UPCOMING_MEETINGS';
+const LOAD_CURR_USER_MEETINGS = 'LOAD_CURR_USER_MEETINGS';
+const CREATE_NEW_MEETING = 'CREATE_NEW_MEETING';
 
 // Used for tracking currUsername and currUserId
 const SET_USERNAME = 'SET_USERNAME';
 const SET_USERID = 'SET_USERID';
 
-
 // define the matching reducer function
-export function groupBuyReducer(state, action) {
+export function roomBookerReducer(state, action) {
   let newListings;
   let currentListingIndex;
 
   switch (action.type) {
-  
     case SET_USERNAME:
-      return { ...state, loggedInUsername: action.payload.username };
+      return {...state, loggedInUsername: action.payload.username};
     case SET_USERID:
-      return { ...state, loggedInUserId: action.payload.userId };
+      return {...state, loggedInUserId: action.payload.userId};
     default:
       return state;
   }
@@ -72,7 +69,6 @@ export function setLoggedInUserId(userId) {
   };
 }
 
-
 /* ********************************
  * ********************************
  * ********************************
@@ -87,18 +83,14 @@ export function setLoggedInUserId(userId) {
 // In this section we extract out the provider HOC
 
 export const RoomBookerContext = React.createContext(null);
-const { Provider } = RoomBookerContext;
+const {Provider} = RoomBookerContext;
 
 // export a provider HOC that contains the initalized reducer
 // pass the reducer as context to the children
 // any child component will be able to alter the state of the app
-export function RoomBookerProvider({ children }) {
-  const [store, dispatch] = useReducer(groupBuyReducer, initialState);
-  return (
-    <Provider value={{ store, dispatch }}>
-      {children}
-    </Provider>
-  );
+export function RoomBookerProvider({children}) {
+  const [store, dispatch] = useReducer(roomBookerReducer, initialState);
+  return <Provider value={{store, dispatch}}>{children}</Provider>;
 }
 
 /* ********************************
@@ -116,7 +108,6 @@ export function RoomBookerProvider({ children }) {
 // code that makes requests to the backend
 //
 // these functions must be passed the dispatch from the current context
-
 
 export function loadListings(dispatch, setAllCategories, setBtnArray) {
   axios.get(`${BACKEND_URL}/listings`).then((result) => {
@@ -137,7 +128,8 @@ export function loadListings(dispatch, setAllCategories, setBtnArray) {
 
 export function selectListing(dispatch, listingId) {
   // console.log('selectListing ', listingId);
-  return axios.get(`${BACKEND_URL}/listing/${listingId}`)
+  return axios
+    .get(`${BACKEND_URL}/listing/${listingId}`)
     .then((result) => {
       // console.log(result.data.selectedListing);
       // console.log('result.data.selectedListing', result.data.selectedListing);
