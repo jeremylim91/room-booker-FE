@@ -7,6 +7,7 @@ import {RoomBookerProvider} from './store.jsx';
 import HomePage from './components/HomePage/HomePage.jsx';
 import CreateBookingMain from './components/CreateBookingMultistepForm/CreateBookingMain.jsx';
 import {CreateBookingContext} from './createBookingStore';
+import ManageUsers from './components/ManageUsers/ManageUsers';
 
 function App() {
   return (
@@ -15,7 +16,8 @@ function App() {
         <NavbarComponent />
         <Switch>
           <Route exact path="/" component={HomePage} />
-          <Route exact path="/createBooking" component={CreateBookingMain} />
+          <Route path="/createBooking" component={CreateBookingMain} />
+          <Route path="/manageUsers" component={ManageUsers} />
           {/* <Route path="/listingdetails/:listingId" component={ViewListing} /> */}
           {/* <Route path="/viewAllListings" component={ViewAllListings} /> */}
           {/* Routes that require cookies/authentication to access */}

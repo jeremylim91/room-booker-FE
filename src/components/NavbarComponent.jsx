@@ -1,8 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react';
-import {
-  Navbar, Nav,
-} from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import React, {useState, useContext, useEffect} from 'react';
+import {Navbar, Nav} from 'react-bootstrap';
+import {LinkContainer} from 'react-router-bootstrap';
 // import SignInModal from './SignInAndRegistration/SignInModal.jsx';
 // import { GroupBuyContext, setLoggedInUsername, setLoggedInUserId } from '../store.jsx';
 // import UsernameBtn from './SignInAndRegistration/UsernameBtn.jsx';
@@ -35,11 +33,14 @@ export default function NavbarComponent() {
             <div className="Room Booker-brand">Room Booker </div>
           </Navbar.Brand>
         </LinkContainer>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(expanded ? false : 'expanded')} />
+        <Navbar.Toggle
+          aria-controls="basic-navbar-nav"
+          onClick={() => setExpanded(expanded ? false : 'expanded')}
+        />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <LinkContainer to="/viewAllListings" onClick={collapseNavBar}>
-              <Nav.Link>Home</Nav.Link>
+            <LinkContainer to="/manageUsers" onClick={collapseNavBar}>
+              <Nav.Link>Manage Users</Nav.Link>
             </LinkContainer>
             {/* <LinkContainer to="/payment">
               <Nav.Link>[test] payment</Nav.Link>
@@ -56,7 +57,6 @@ export default function NavbarComponent() {
               : (
                 <SignInModal collapseNavBar={collapseNavBar} />
               )} */}
-
           </Nav>
         </Navbar.Collapse>
       </Navbar>
