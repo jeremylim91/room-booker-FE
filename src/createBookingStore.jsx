@@ -35,14 +35,14 @@ export const initialFormState = {
   roomId: '',
   startTime: null,
   endTime: null,
-  agenda: '',
-  attendees: null,
+  agenda: ' ',
+  attendees: [],
   meetingDate: '',
 };
 
 /* ********************************
  * ********************************
- * ACTIONS
+ * ACTION DESCRIPTOR
  * ********************************
  * *********************************/
 
@@ -52,13 +52,18 @@ export const initialFormState = {
 // const GET_ROOM_CATALOGUE = 'GET_ROOM_CATALOGUE';
 
 // save the user-selected room's id to the state
-export const UPDATE_SELECTED_ROOM = 'UPDATE_SELECTED_ROOM';
+const UPDATE_SELECTED_ROOM = 'UPDATE_SELECTED_ROOM';
 
 // add a new mtg to the calendar
 const CREATE_NEW_MEETING = 'CREATE_NEW_MEETING';
 
-// used to handle changes to text input in forms
-export const HANDLE_FORM_TEXT = 'HANDLE_FORM_TEXT';
+// update the mtg start and end time
+const UPDATE_MEETING_START_END = 'UPDATE_MEETING_START_END';
+// update the agenda
+const UPDATE_AGENDA = 'UPDATE_AGENDA';
+
+// add or remove meeting attendees
+const UPDATE_ATTENDEES = 'UPDATE_ATTENDEES';
 
 /* ********************************
  * ********************************
@@ -71,19 +76,32 @@ export function createBookingReducer(state, action) {
   switch (action.type) {
     case UPDATE_SELECTED_ROOM:
       return {...state, roomId: action.payload.roomId};
+
     case CREATE_NEW_MEETING:
-      console.log({...state});
       return {...state};
+    case UPDATE_MEETING_START_END:
+      return {
+        ...state,
+        startTime: action.payload.startTime,
+        endTime: action.payload.endTime,
+      };
+
+    case UPDATE_AGENDA:
+      return {
+        ...state,
+        agenda: action.payload.agenda,
+      };
+
+    case UPDATE_ATTENDEES:
+      return {
+        ...state,
+        attendees: action.payload.newAttendeesList,
+      };
+
     default:
       return null;
   }
 }
-// export function createBookingReducer(state, {field, value}) {
-//   return {
-//     ...state,
-//     [field]: value,
-//   };
-// }
 
 /* ********************************
  * ********************************
@@ -95,13 +113,39 @@ export function createBookingReducer(state, action) {
 // and return an object that represents that action, which is typically
 // passed to the dispatch function. Actions always contain a type attribute
 // used to identify the action and tell the reducer what logic to run.
-export function updateSelectedRoom(roomId) {
-  console.log(`roomId in action-generator (shld be int)`);
+export function updateSelectedRoomAction(roomId) {
+  console.log(`roomId is:`);
   console.log(roomId);
   return {
     type: UPDATE_SELECTED_ROOM,
     payload: {
       roomId,
+    },
+  };
+}
+export function updateMeetingStartEndAction(startTime, endTime) {
+  console.log('inside the store action ');
+  return {
+    type: UPDATE_MEETING_START_END,
+    payload: {
+      startTime,
+      endTime,
+    },
+  };
+}
+export function updateAgendaAction(agenda) {
+  return {
+    type: UPDATE_AGENDA,
+    payload: {
+      agenda,
+    },
+  };
+}
+export function updateAttendeesAction(newAttendeesList) {
+  return {
+    type: UPDATE_ATTENDEES,
+    payload: {
+      newAttendeesList,
     },
   };
 }
@@ -133,8 +177,10 @@ export function CreateBookingProvider({children}) {
     writeStorage(CREATE_BOOKING_FORM, {});
   }
 
-  const handleOnChange = (e) => {
-    dispatchBookingForm({field: e.target.name, value: e.target.value});
+  const handleOnChange = (actionDescriptor, e) => {
+    console.log(`e.target.value is:`);
+    console.log(e.target.value);
+    dispatchBookingForm(actionDescriptor(e.target.value));
     writeStorage(CREATE_BOOKING_FORM, {
       ...formLocalStorage,
       [e.target.name]: e.target.value,
@@ -182,21 +228,59 @@ export function CreateBookingProvider({children}) {
 
 // get all the rooms to display to user
 export function getRoomCatalogue(setRoomCatalogue) {
-  axios.get(`${BACKEND_URL}/rooms`).then(({data}) => {
-    setRoomCatalogue(data);
-  });
-}
-export function getAllEvents(setAllEvents, roomId) {
-  console.log('about to get all events relating to room');
-  axios.get(`${BACKEND_URL}/bookings/${roomId}`).then(({data}) => {
-    // convert all dates to js dates, else it breaks the calendar
-    data.map((elem) => {
-      elem.bookingDate = new Date(elem.bookingDate);
-      elem.startTime = new Date(elem.startTime);
-      elem.endTime = new Date(elem.endTime);
+  return axios
+    .get(`${BACKEND_URL}/rooms`)
+    .then(({data}) => {
+      setRoomCatalogue(data);
+    })
+    .catch((err) => {
+      console.log(err);
     });
-    console.log(`data returned to client from getAllEvents() fn`);
-    console.log(data);
-    setAllEvents(data);
-  });
+}
+// get all users
+export function getUsers(setProps, newProps) {
+  return axios
+    .get(`${BACKEND_URL}/users/findAll`)
+    .then(({data}) => {
+      // convert each data's 'username' key to 'name' so tt it will work with the external lib
+      for (let i = 0; i < data.length; i++) {
+        data[i].name = data[i]['username'];
+        delete data[i].username;
+      }
+      newProps.suggestions = data;
+      setProps(newProps);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+// gett all the events tied to a given room
+export function getAllEvents(setAllEvents, roomId) {
+  return axios
+    .get(`${BACKEND_URL}/bookings/${roomId}`)
+    .then(({data}) => {
+      // convert all dates to js dates, else it breaks the calendar
+      data.map((elem) => {
+        elem.bookingDate = new Date(elem.bookingDate);
+        elem.startTime = new Date(elem.startTime);
+        elem.endTime = new Date(elem.endTime);
+      });
+      setAllEvents(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+// save new meeting to the db
+export function saveNewMeeting(setIsMeetingSaved, meetingDetails) {
+  console.log(`meetingDetails is:`);
+  console.log(meetingDetails);
+  return axios
+    .post(`${BACKEND_URL}/bookings`, {meetingDetails})
+    .then(({data}) => {
+      setIsMeetingSaved(true);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }

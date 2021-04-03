@@ -7,6 +7,7 @@ import {
   CREATE_BOOKING_FORM,
   getAllEvents,
   formModes,
+  updateMeetingStartEndAction,
 } from '../../createBookingStore';
 // import {formModes} from '../../createBookingStore.jsx';
 import {Calendar, momentLocalizer, Views} from 'react-big-calendar';
@@ -32,14 +33,11 @@ export default function SelectDateTime({setMode}) {
   } = useContext(CreateBookingContext);
 
   // logic that tells app to get roomId if alr in local storage, else get it from global state
-  const roomId = formLocalStorage.ROOM_ID
-    ? formLocalStorage.ROOM_ID
+  const roomId = formLocalStorage.roomId
+    ? formLocalStorage.roomId
     : formStore.roomId;
 
   const {SELECT_DATE_TIME, FORM_STEP} = formModes;
-
-  // set a const tt is the key for local storage obj
-  const CAL_EVENTS_BY_ROOM_ID = 'CAL_EVENTS_BY_ROOM_ID';
 
   // local states
   const [show, setShow] = useState(false);
@@ -71,10 +69,11 @@ export default function SelectDateTime({setMode}) {
 
   // this fn runs whenever a user selects a timeslot on the calendar
   const handleCreateEvent = (e) => {
-    setuserSelectionDetails(e);
+    console.log(e.start);
+    dispatchBookingForm(updateMeetingStartEndAction(e.start, e.end));
+    // setuserSelectionDetails(e);
     handleShow();
   };
-  const today = new Date();
   return (
     <>
       <Calendar
