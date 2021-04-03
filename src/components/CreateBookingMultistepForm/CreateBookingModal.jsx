@@ -25,7 +25,7 @@ export default function CreateBookingModal({
   //set a state change the modal's content when meeting is saved
   const [isMeetingSaved, setIsMeetingSaved] = useState(false);
 
-  // destructure imported vars
+  // destructure vars obtained thru useContext
   const {
     formStore,
     dispatchBookingForm,

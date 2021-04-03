@@ -109,87 +109,16 @@ export function RoomBookerProvider({children}) {
 //
 // these functions must be passed the dispatch from the current context
 
-export function loadListings(dispatch, setAllCategories, setBtnArray) {
-  axios.get(`${BACKEND_URL}/listings`).then((result) => {
-    // dispatch(loadListingsAction(result.data.listings));
-    // dispatch(sortListingsByEndDateAction());
-    // dispatch(sortAndFilterListingsByCreatedDate());
-    // dispatch(loadCategoriesAction(result.data.categories));
-    // dispatch(loadListingStatusesAction(result.data.listingStatus));
-    // writeStorage('categories', result.data.categories);
-    // writeStorage('listingStatus', result.data.listingStatus);
-    // to do: for delivery modes also
-    // To set all the categories in the buttons
-    setAllCategories(result.data.categories);
-    const allBtnsState = result.data.categories.map((_) => false);
-    setBtnArray([true, ...allBtnsState]);
-  });
-}
-
-export function selectListing(dispatch, listingId) {
-  // console.log('selectListing ', listingId);
-  return axios
-    .get(`${BACKEND_URL}/listing/${listingId}`)
-    .then((result) => {
-      // console.log(result.data.selectedListing);
-      // console.log('result.data.selectedListing', result.data.selectedListing);
-      // dispatch(selectListingAction(result.data.selectedListing));
+export function deleteUser(localState, setLocalState, userId) {
+  axios
+    .put(`${BACKEND_URL}/users/delete/${userId}`)
+    .then(({data}) => {
+      // remove user as a tag
+      let newLocalState = {...localState};
+      newLocalState.tags = [];
+      setLocalState(newLocalState);
     })
     .catch((err) => {
       console.log(err);
     });
 }
-
-// export function findPurchaseCountPerListing(listingId, setProgressPercent) {
-//   // console.log('findPurchaseCountPerListing listingId', listingId);
-//   axios.get(`${BACKEND_URL}/purchases/count/${listingId}`).then((result) => {
-//     setProgressPercent(result.data.purchaseCount);
-//   });
-// }
-
-// export function getPurchaseCountPerListing(listingId) {
-//   axios.get(`${BACKEND_URL}/purchases/count/${listingId}`).then((result) => (result.data.purchaseCount));
-// }
-
-// export function createListing(dispatch, listing) {
-//   return axios.post(`${BACKEND_URL}/addlisting`, listing).then((result) => {
-//     // dispatch(addListingAction());
-//     // return result.data.listing.id;
-//   });
-// }
-
-// export function updateListing(dispatch, updatedListingData, imageFormData) {
-//   // Upload the edited data to db
-//   return axios.post(`${BACKEND_URL}/listings/${updatedListingData.id}/update`,
-//     { updatedListingData }).then((result) =>
-//   {
-//     console.log('update successfully: ', result.data.updatedListing.id);
-//     // Upload added images
-//     return axios.post(`${BACKEND_URL}/listings/${updatedListingData.id}/update/images`, imageFormData).then((resImageUpload) => {
-//       console.log('update image successfully: ', resImageUpload.data.updatedListing.id);
-//       // dispatch(selectListingAction(resImageUpload.data.updatedListing));
-//       return resImageUpload.data.updatedListing.id;
-//     })
-//       .catch((err) => {
-//         // dispatch(selectListingAction(result.data.updatedListing));
-//         return result.data.updatedListing.id;
-//       }); });
-// }
-
-// export function recordPurchase(dispatch, uploadedFile, listingPK, qtyOrdered) {
-//   // If is use {uploadedFile and CurrItemPk, req.files becomes empty obj in my purchases controller}
-//   return axios.post(`${BACKEND_URL}/recordPurchase/${listingPK}/${qtyOrdered}`, uploadedFile)
-//     .then(() => {
-//       // what to do after store the img?
-//       console.log('image url has been saved to db successfully');
-//     });
-// }
-
-// export function getAllPurchasesAssociatedWUser(userName) {
-//   return axios.post(`${BACKEND_URL}/allPurchases`, { userName })
-//     .then(({ data }) => data)
-//     .catch((error) => {
-//       console.log(error);
-//       window.location = '/error';
-//     });
-// }

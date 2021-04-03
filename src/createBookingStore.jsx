@@ -238,7 +238,7 @@ export function getRoomCatalogue(setRoomCatalogue) {
     });
 }
 // get all users
-export function getUsers(setProps, newProps) {
+export function getUsers(setLocalState, newProps) {
   return axios
     .get(`${BACKEND_URL}/users/findAll`)
     .then(({data}) => {
@@ -248,14 +248,14 @@ export function getUsers(setProps, newProps) {
         delete data[i].username;
       }
       newProps.suggestions = data;
-      setProps(newProps);
+      setLocalState(newProps);
     })
     .catch((err) => {
       console.log(err);
     });
 }
-// gett all the events tied to a given room
-export function getAllEvents(setAllEvents, roomId) {
+// get all the events tied to a given room
+export function getAllEvents(setLocalState, roomId) {
   return axios
     .get(`${BACKEND_URL}/bookings/${roomId}`)
     .then(({data}) => {
@@ -265,18 +265,18 @@ export function getAllEvents(setAllEvents, roomId) {
         elem.startTime = new Date(elem.startTime);
         elem.endTime = new Date(elem.endTime);
       });
-      setAllEvents(data);
+      setLocalState(data);
     })
     .catch((err) => {
       console.log(err);
     });
 }
 // save new meeting to the db
-export function saveNewMeeting(setIsMeetingSaved, meetingDetails) {
+export function saveNewMeeting(setLocalState, meetingDetails) {
   return axios
     .post(`${BACKEND_URL}/bookings`, {meetingDetails})
     .then(({data}) => {
-      setIsMeetingSaved(true);
+      setLocalState(true);
     })
     .catch((err) => {
       console.log(err);
