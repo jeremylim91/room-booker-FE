@@ -3,7 +3,7 @@ import {
   CreateBookingContext,
   CREATE_BOOKING_FORM,
   getRoomCatalogue,
-  updateSelectedRoom,
+  updateSelectedRoomAction,
 } from '../../createBookingStore';
 import {formModes} from '../../createBookingStore.jsx';
 import Button from 'react-bootstrap/Button';
@@ -37,10 +37,13 @@ export default function SelectRoom({setMode}) {
   }, []);
 
   const handleRoomSelection = (roomId) => {
-    dispatchBookingForm(updateSelectedRoom(roomId));
+    dispatchBookingForm(updateSelectedRoomAction(roomId));
     // add the selected rm to local storage
     //  there doesn't seem to be a need to store the cal events in local storage for now
-    writeStorage(CREATE_BOOKING_FORM, {...formLocalStorage, [ROOM_ID]: roomId});
+    writeStorage(CREATE_BOOKING_FORM, {
+      ...formLocalStorage,
+      roomId: roomId,
+    });
   };
 
   const DisplayRooms = () => {
