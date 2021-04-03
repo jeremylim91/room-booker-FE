@@ -273,8 +273,6 @@ export function getAllEvents(setAllEvents, roomId) {
 }
 // save new meeting to the db
 export function saveNewMeeting(setIsMeetingSaved, meetingDetails) {
-  console.log(`meetingDetails is:`);
-  console.log(meetingDetails);
   return axios
     .post(`${BACKEND_URL}/bookings`, {meetingDetails})
     .then(({data}) => {
