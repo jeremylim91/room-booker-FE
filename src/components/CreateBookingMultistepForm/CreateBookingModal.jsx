@@ -20,6 +20,8 @@ export default function CreateBookingModal({
   show,
   handleClose,
 }) {
+  // Destructure imported vars
+  const {FORM_STEP} = formModes;
   //set a state to hold info tt must be fed into the autocomplete feature
   const [props, setProps] = useState({suggestions: [], tags: []});
   //set a state change the modal's content when meeting is saved
@@ -78,6 +80,9 @@ export default function CreateBookingModal({
     console.log(`formStore that goes into BE:`);
     console.log(formStore);
     saveNewMeeting(setIsMeetingSaved, formStore);
+    deleteFromStorage(CREATE_BOOKING_FORM);
+    deleteFromStorage(FORM_STEP);
+    window.location = '/dashboard';
   };
 
   return (
