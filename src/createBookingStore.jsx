@@ -229,7 +229,7 @@ export function CreateBookingProvider({children}) {
 // get all the rooms to display to user
 export function getRoomCatalogue(setRoomCatalogue) {
   return axios
-    .get(`${BACKEND_URL}/rooms`)
+    .get(`${BACKEND_URL}/rooms`, {withCredentials: true})
     .then(({data}) => {
       setRoomCatalogue(data);
     })
@@ -240,8 +240,10 @@ export function getRoomCatalogue(setRoomCatalogue) {
 // get all users
 export function getUsers(setLocalState, newProps) {
   return axios
-    .get(`${BACKEND_URL}/users/findAll`)
+    .get(`${BACKEND_URL}/users/findAll`, {withCredentials: true})
     .then(({data}) => {
+      console.log(`data returned to client from getUsers fn`);
+      console.log(data);
       // convert each data's 'username' key to 'name' so tt it will work with the external lib
       for (let i = 0; i < data.length; i++) {
         data[i].name = data[i]['username'];
@@ -257,7 +259,9 @@ export function getUsers(setLocalState, newProps) {
 // get all the events tied to a given room
 export function getAllEvents(setLocalState, roomId) {
   return axios
-    .get(`${BACKEND_URL}/bookings/${roomId}`)
+    .get(`${BACKEND_URL}/bookings/bookingsBasedOnRoomId/${roomId}`, {
+      withCredentials: true,
+    })
     .then(({data}) => {
       // convert all dates to js dates, else it breaks the calendar
       data.map((elem) => {
@@ -274,7 +278,7 @@ export function getAllEvents(setLocalState, roomId) {
 // save new meeting to the db
 export function saveNewMeeting(setLocalState, meetingDetails) {
   return axios
-    .post(`${BACKEND_URL}/bookings`, {meetingDetails})
+    .post(`${BACKEND_URL}/bookings`, {meetingDetails}, {withCredentials: true})
     .then(({data}) => {
       setLocalState(true);
     })
