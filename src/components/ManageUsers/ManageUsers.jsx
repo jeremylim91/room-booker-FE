@@ -1,8 +1,11 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Container, Row, Col, Form} from 'react-bootstrap';
+import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 import {getUsers} from '../../createBookingStore.jsx';
 import ReactTags from 'react-tag-autocomplete';
-import {RoomBookerContext} from '../../store.jsx';
+import {RoomBookerContext, deleteUser, createUser} from '../../store.jsx';
+import {onAddition, onDelete} from '../../utils/autocompleteRelatedFns.mjs';
+import WarningMessageAboutDeletion from './WarningMessageAboutDeletion.jsx';
+import WarningModal from '../HOCs/WarningModal.jsx';
 
 // add and delete users
 export default function ManageUsers() {
@@ -18,13 +21,23 @@ export default function ManageUsers() {
   const [props, setProps] = useState({suggestions: [], tags: []});
 
   // set a state to hold user details
-  const [newUserDetails, setNewUserDetails] = useState({});
+  const [newUserDetails, setNewUserDetails] = useState({
+    email: '',
+    username: '',
+    password: '',
+    isAdmin: false,
+  });
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   // get all user data
   // query the db to get all users and their id
   useEffect(() => {
     const newProps = {...props};
-    getUsers(props, setProps, newProps);
+    getUsers(setProps, newProps);
   }, []);
 
   const handleTextInputChange = (e, field) => {
@@ -32,63 +45,58 @@ export default function ManageUsers() {
     newNewUserDetails[field] = e.target.value;
     setNewUserDetails(newNewUserDetails);
   };
-  const handleCheckBoxChange = (e, field) => {
+  const handleCheckBoxToggle = (e, field) => {
     const newNewUserDetails = {...newUserDetails};
-    // if the field in the state is not initialised, set it to true
-    if (!newNewUserDetails.isAdmin) {
-      newNewUserDetails[field] = true;
-      setNewUserDetails(newNewUserDetails);
-    }
     // else, toggle between true and false depending on curr state
     newNewUserDetails[field] = !newNewUserDetails[field];
+    console.log(e.target.value);
     setNewUserDetails(newNewUserDetails);
   };
 
-  const onAddition = (tag) => {
-    // get the form info that is currently saved in user's local storage
-    let newProps = {...props};
-    newProps.tags = [...newProps.tags, tag];
-    setProps(newProps);
+  // when the user clicks delete, display a warning before allowing user to proceed
+  const handleClickDelete = () => {
+    if (props.tags.length === 0) return;
+    handleShow();
   };
 
-  const onDelete = (i) => {
-    let newProps = {...props};
-    newProps.tags = newProps.tags.slice(0);
-    newProps.tags.splice(i, 1);
-    setProps(newProps);
+  const handleCreateUser = () => {
+    createUser(newUserDetails, setNewUserDetails);
   };
 
   return (
     <div>
       <Container fluid>
         <Row>
-          <Col>
-            Delete User
+          <Col xs={12} md={6} className="mt-4">
+            <h3> Remove User(s)</h3>
             <Row>
-              <Col>Find User:</Col>
-              <Col>
+              <Col xs={12}>Find User(s):</Col>
+              <Col xs={12}>
                 <ReactTags
                   suggestions={props.suggestions}
                   tags={props.tags}
-                  onDelete={onDelete}
-                  onAddition={onAddition}
+                  onDelete={(i) => onDelete(i, props, setProps)}
+                  onAddition={(tag) => onAddition(tag, props, setProps)}
                   noSuggestionsText="User not found"
                 />
               </Col>
+              <Col xs={12}>
+                <Button
+                  variant="outline-danger"
+                  onClick={handleClickDelete}
+                  className="mt-3">
+                  Delete user
+                </Button>
+              </Col>
             </Row>
           </Col>
-          <Col>
-            Add User
+          <Col xs={12} md={6} className="mt-4">
+            <h3>Add User </h3>
             <Row>
               <Col>
                 <Form>
-                  <div className="col add-user-details d-flex flex-row justify-content-start">
-                    <div className="create-listing-header ml-1">
-                      About Item (1/4)
-                    </div>
-                  </div>
                   <Form.Group
-                    className="ml-3 mt-3"
+                    className=" mt-3"
                     controlId="add-user-details-form ">
                     <Form.Label>Email</Form.Label>
                     <Form.Control
@@ -110,7 +118,7 @@ export default function ManageUsers() {
                   </Form.Group>
 
                   <Form.Group
-                    className="ml-3 mt-3"
+                    className=" mt-3"
                     controlId="add-user-details-form ">
                     <Form.Label>Username</Form.Label>
                     <Form.Control
@@ -132,13 +140,13 @@ export default function ManageUsers() {
                   </Form.Group>
 
                   <Form.Group
-                    className="ml-3 mt-3"
+                    className=" mt-3"
                     controlId="add-user-details-form ">
                     <Form.Label>Password</Form.Label>
                     <Form.Control
                       name="password"
                       type="text"
-                      placeholder="Default if blank: 123456789"
+                      placeholder="Default if blank: password1"
                       value={
                         // formLocalStorage.title
                         // ? formLocalStorage.title:
@@ -158,17 +166,28 @@ export default function ManageUsers() {
                   <Form.Group controlId="add-user-details-form">
                     <Form.Check
                       type="checkbox"
-                      label="Is new user an"
+                      label="Grant new user admin rights"
                       value={newUserDetails.isAdmin}
-                      onChange={(e) => handleCheckBoxChange(e, 'isAdmin')}
+                      onChange={(e) => handleCheckBoxToggle(e, 'isAdmin')}
                     />
                   </Form.Group>
+
+                  <Button variant="outline-primary" onClick={handleCreateUser}>
+                    Create user
+                  </Button>
                 </Form>
               </Col>
             </Row>
           </Col>
         </Row>
       </Container>
+      {WarningModal(
+        WarningMessageAboutDeletion,
+        show,
+        handleClose,
+        props,
+        setProps
+      )}
     </div>
   );
 }
