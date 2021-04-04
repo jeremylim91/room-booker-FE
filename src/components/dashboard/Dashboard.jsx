@@ -1,19 +1,15 @@
 import React, {useContext, useState, useEffect} from 'react';
-import CreateBookingModal from './CreateBookingModal.jsx';
+// import CreateBookingModal from './CreateBookingModal.jsx';
 import Button from 'react-bootstrap/Button';
-import {writeStorage, deleteFromStorage} from '@rehooks/local-storage';
-import {
-  CreateBookingContext,
-  CREATE_BOOKING_FORM,
-  getAllEvents,
-  formModes,
-  updateMeetingStartEndAction,
-} from '../../createBookingStore';
-// import {formModes} from '../../createBookingStore.jsx';
-import {Calendar, momentLocalizer, Views} from 'react-big-calendar';
+import {RoomBookerContext, getAllEventsByUserId} from '../../store.jsx';
+import {Calendar, momentLocalizer} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import '../../styles/calendarStyles.scss';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 import {
   getLowerBoundDate,
   getUpperBoundDate,
@@ -22,28 +18,21 @@ import {
 // Setup the localizer by providing the moment (or globalize) Object
 // to the correct localizer.
 const localizer = momentLocalizer(moment);
+const DnDCalendar = withDragAndDrop(Calendar);
 
 export default function Dashboard() {
   // destructure imported vars
-  const {
-    formStore,
-    dispatchBookingForm,
-    handleOnChange,
-    formLocalStorage,
-  } = useContext(CreateBookingContext);
+  const {store, dispatchBookingForm} = useContext(RoomBookerContext);
+
+  const {loggedInUserId} = store;
 
   // logic that tells app to get roomId if alr in local storage, else get it from global state
-  const roomId = formLocalStorage.roomId
-    ? formLocalStorage.roomId
-    : formStore.roomId;
-
-  const {SELECT_DATE_TIME, FORM_STEP} = formModes;
 
   // ==============local states=====================
   // manage modal display
   const [show, setShow] = useState(false);
   // display all meetings taking place in the room specified by user
-  const [allEvents, setAllEvents] = useState([]);
+  const [allEventsByUserId, setAllEventsByUserId] = useState([]);
   // Meeting details that the user inputs
   const [userSelectionDetails, setuserSelectionDetails] = useState({});
   // ==================================================
@@ -53,70 +42,72 @@ export default function Dashboard() {
   const handleShow = () => setShow(true);
   // =================================================
 
+  // load all events for current user
   useEffect(() => {
-    getAllEvents(setAllEvents, userId);
-    // for now, doesn't seem to be a need for the dates to persist (takes up local storage unecessarily)
-    // writeStorage(CREATE_BOOKING_FORM, {
-    //   ...formLocalStorage,
-    //   [CAL_EVENTS_BY_ROOM_ID]: allEvents,
-    // });
+    console.log(`running use effect in dashboard`);
+    getAllEventsByUserId(setAllEventsByUserId);
   }, []);
-  const handleNextPage = () => {
-    setMode(SELECT_DATE_TIME);
-    writeStorage(FORM_STEP, SELECT_DATE_TIME);
-  };
-
-  const handleCancelForm = () => {
-    window.location = '/';
-    deleteFromStorage(CREATE_BOOKING_FORM);
-    deleteFromStorage(FORM_STEP);
-  };
+  console.log(`allEventsByUserId is:`);
+  console.log(allEventsByUserId);
 
   // this fn runs whenever a user selects a timeslot on the calendar
-  const handleCreateEvent = (e) => {
-    console.log(e.start);
-    dispatchBookingForm(updateMeetingStartEndAction(e.start, e.end));
-    // setuserSelectionDetails(e);
-    handleShow();
-  };
+  // const handleCreateEvent = (e) => {
+  //   console.log(e.start);
+  //   dispatchBookingForm(updateMeetingStartEndAction(e.start, e.end));
+  //   // setuserSelectionDetails(e);
+  //   handleShow();
+  // };
   return (
     <>
       <Calendar
         localizer={localizer}
-        events={allEvents}
+        events={
+          // check if the state has been set with the user's dates
+          Object.keys(allEventsByUserId).length > 0
+            ? [
+                ...allEventsByUserId.userMeetings,
+                ...allEventsByUserId.bookedByUser,
+              ]
+            : []
+
+          //   {
+          //   ...allEventsByUserId.userMeetings,
+          //   ...allEventsByUserId.bookedByUser,
+          // }
+        }
         titleAccessor="agenda"
         startAccessor="startTime"
         endAccessor="endTime"
-        selectable={'ignoreEvents'}
-        onSelectSlot={(e) => {
-          handleCreateEvent(e);
-        }}
+        // selectable={'ignoreEvents'}
+        // onSelectSlot={(e) => {
+        //   handleCreateEvent(e);
+        // }}
         onSelectEvent={(event) => alert(event.title)}
         defaultView="month"
         views={['month', 'week', 'day']}
         // Determines the selectable time increments in week and day views
         step={30}
         // timeslots={30}
-        min={getLowerBoundDate()} // 8.00 AM
-        max={getUpperBoundDate()} // Max will be 6.00 PM!
+        min={getLowerBoundDate()} // set at 8.00 AM
+        max={getUpperBoundDate()} // Max will be 6.00 PM
       />
       <div className="container">
         <div className="row">
           <div className="col">
-            <Button onClick={handleNextPage}> Next</Button>
+            <Button onClick={() => {}}> Next</Button>
           </div>
         </div>
         <div className="row">
           <div className="col">
-            <Button onClick={handleCancelForm}> Cancel</Button>
+            <Button onClick={() => {}}> Cancel</Button>
           </div>
         </div>
       </div>
-      <CreateBookingModal
+      {/* <CreateBookingModal
         userSelectionDetails={userSelectionDetails}
         show={show}
         handleClose={handleClose}
-      />
+      /> */}
     </>
   );
 }
