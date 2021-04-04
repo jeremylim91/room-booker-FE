@@ -6,6 +6,7 @@ import {RoomBookerProvider} from './store.jsx';
 
 import HomePage from './components/HomePage/HomePage.jsx';
 import CreateBookingMain from './components/CreateBookingMultistepForm/CreateBookingMain.jsx';
+import Dashboard from './components/dashboard/Dashboard.jsx';
 import {CreateBookingContext} from './createBookingStore';
 import ManageUsers from './components/ManageUsers/ManageUsers';
 
@@ -18,6 +19,7 @@ function App() {
           <Route exact path="/" component={HomePage} />
           <Route path="/createBooking" component={CreateBookingMain} />
           <Route path="/manageUsers" component={ManageUsers} />
+          <Route path="/dashboard" component={Dashboard} />
           {/* <Route path="/listingdetails/:listingId" component={ViewListing} /> */}
           {/* <Route path="/viewAllListings" component={ViewAllListings} /> */}
           {/* Routes that require cookies/authentication to access */}

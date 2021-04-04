@@ -1,24 +1,31 @@
 import React, {useState, useContext, useEffect} from 'react';
 import {Navbar, Nav} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
-// import SignInModal from './SignInAndRegistration/SignInModal.jsx';
-// import { GroupBuyContext, setLoggedInUsername, setLoggedInUserId } from '../store.jsx';
-// import UsernameBtn from './SignInAndRegistration/UsernameBtn.jsx';
-// import { getUsernameFromCookie, getUserIdFromCookie } from '../helper.js';
+import SignInModal from './SignInAndRegistration/SignInModal.jsx';
+import {
+  RoomBookerContext,
+  setLoggedInEmail,
+  setLoggedInUserId,
+} from '../store.jsx';
+import UsernameBtn from './SignInAndRegistration/UsernameBtn.jsx';
+import {
+  getUsernameFromCookie,
+  getUserIdFromCookie,
+} from '../utils/cookieRelatedFns.mjs';
 
 export default function NavbarComponent() {
-  // const { store, dispatch } = useContext(GroupBuyContext);
+  const {store, dispatch} = useContext(RoomBookerContext);
   const [expanded, setExpanded] = useState(false);
 
-  // useEffect(() => {
-  //   const currUsername = getUsernameFromCookie();
-  //   const currUserId = getUserIdFromCookie();
+  useEffect(() => {
+    const currUsername = getUsernameFromCookie();
+    const currUserId = getUserIdFromCookie();
 
-  //   if (currUsername) {
-  //     dispatch(setLoggedInUsername(currUsername));
-  //     dispatch(setLoggedInUserId(currUserId));
-  //   }
-  // }, []);
+    if (currUsername) {
+      dispatch(setLoggedInEmail(currUsername));
+      dispatch(setLoggedInUserId(currUserId));
+    }
+  }, []);
 
   const collapseNavBar = () => {
     setExpanded(false);
@@ -42,6 +49,9 @@ export default function NavbarComponent() {
             <LinkContainer to="/manageUsers" onClick={collapseNavBar}>
               <Nav.Link>Manage Users</Nav.Link>
             </LinkContainer>
+            <LinkContainer to="/dashboard" onClick={collapseNavBar}>
+              <Nav.Link>Dashboard</Nav.Link>
+            </LinkContainer>
             {/* <LinkContainer to="/payment">
               <Nav.Link>[test] payment</Nav.Link>
             </LinkContainer> */}
@@ -50,13 +60,11 @@ export default function NavbarComponent() {
             </LinkContainer> */}
           </Nav>
           <Nav className="ml-auto">
-            {/* {store.loggedInUsername
-              ? (
-                <UsernameBtn collapseNavBar={collapseNavBar} />
-              )
-              : (
-                <SignInModal collapseNavBar={collapseNavBar} />
-              )} */}
+            {store.loggedInEmail ? (
+              <UsernameBtn collapseNavBar={collapseNavBar} />
+            ) : (
+              <SignInModal collapseNavBar={collapseNavBar} />
+            )}
           </Nav>
         </Navbar.Collapse>
       </Navbar>
