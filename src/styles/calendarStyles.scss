@@ -1,5 +1,5 @@
 @import 'react-big-calendar/lib/sass/styles';
-@import 'react-big-calendar/lib/addons/dragAndDrop/styles';
+// @import 'react-big-calendar/lib/addons/dragAndDrop/styles';
 
 .rbc-month-row {
   display: -ms-flexbox;
@@ -37,6 +37,13 @@
 // .rbc-time-header {
 //   height: 60px;
 // }
+
+.rbc-header {
+  min-height: 50px;
+}
 .rbc-time-content {
   flex: 1;
 }
+// .rbc-row-content {
+//   display: none;
+// }
