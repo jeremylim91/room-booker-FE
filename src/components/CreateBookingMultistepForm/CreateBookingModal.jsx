@@ -3,6 +3,7 @@ import {Form, Button, Container, Row, Col, Modal} from 'react-bootstrap';
 import moment from 'moment';
 import ReactTags from 'react-tag-autocomplete';
 import '../../styles/createBookingModal.scss';
+import TaggingField from '../HOCs/TaggingField.jsx';
 
 import {writeStorage, deleteFromStorage} from '@rehooks/local-storage';
 import {
@@ -23,9 +24,12 @@ export default function CreateBookingModal({
   // Destructure imported vars
   const {FORM_STEP} = formModes;
   //set a state to hold info tt must be fed into the autocomplete feature
-  const [props, setProps] = useState({suggestions: [], tags: []});
+  // const [props, setProps] = useState({suggestions: [], tags: []});
   //set a state change the modal's content when meeting is saved
   const [isMeetingSaved, setIsMeetingSaved] = useState(false);
+  // set a state to hold all the mtg attendee tags
+  const [tagsProp, setTagsProp] = useState([]);
+  const [suggestionsProp, setSuggestionsProp] = useState([]);
 
   // destructure vars obtained thru useContext
   const {
@@ -37,8 +41,7 @@ export default function CreateBookingModal({
 
   // query the db to get all users and their id
   useEffect(() => {
-    const newProps = {...props};
-    getUsers(setProps, newProps);
+    getUsers(setSuggestionsProp);
   }, []);
 
   // get the start & end time from the prop and format it as string
@@ -48,33 +51,45 @@ export default function CreateBookingModal({
   // get the mtg date and format it as a str
   const mtgDate = moment(formStore.startTime).format('LL');
 
-  const onAddition = (tag) => {
-    // get the form info that is currently saved in user's local storage
-    let newProps = {...props};
-    newProps.tags = [...newProps.tags, tag];
-    // save to local storage so tt user keeps the attendees even if the dates change
+  // const onAddition = (tag) => {
+  //   // get the form info that is currently saved in user's local storage
+  //   let newProps = {...props};
+  //   newProps.tags = [...newProps.tags, tag];
+  //   // save to local storage so tt user keeps the attendees even if the dates change
+  //   writeStorage(CREATE_BOOKING_FORM, {
+  //     ...formLocalStorage,
+  //     tags: newProps.tags,
+  //   });
+  // dispatchBookingForm(updateAttendeesAction(newProps.tags));
+  // setProps(newProps);
+  // };
+  useEffect(() => {
     writeStorage(CREATE_BOOKING_FORM, {
       ...formLocalStorage,
-      tags: newProps.tags,
+      tags: tagsProp,
     });
-    dispatchBookingForm(updateAttendeesAction(newProps.tags));
-    setProps(newProps);
-  };
-  console.log(`formStore is:`);
-  console.log(formStore);
+  }, [tagsProp]);
 
-  const onDelete = (i) => {
-    let newProps = {...props};
-    newProps.tags = newProps.tags.slice(0);
-    newProps.tags.splice(i, 1);
-    // save to local storage so tt user keeps the attendees even if the dates change
-    writeStorage(CREATE_BOOKING_FORM, {
-      ...formLocalStorage,
-      tags: newProps.tags,
-    });
-    dispatchBookingForm(updateAttendeesAction(newProps.tags));
-    setProps(newProps);
-  };
+  // },[tagsProp])
+
+  //   const saveFormInfoToLocalStorage = (key, newVal) => {
+  //     writeStorage(key, newVal);
+  //   };
+  // });
+  // const updateStore = dispatchBookingForm(updateAttendeesAction(tagsProp));
+
+  // const onDelete = (i) => {
+  //   let newProps = {...props};
+  //   newProps.tags = newProps.tags.slice(0);
+  //   newProps.tags.splice(i, 1);
+  //   // save to local storage so tt user keeps the attendees even if the dates change
+  //   writeStorage(CREATE_BOOKING_FORM, {
+  //     ...formLocalStorage,
+  //     tags: newProps.tags,
+  //   });
+  //   dispatchBookingForm(updateAttendeesAction(newProps.tags));
+  //   setProps(newProps);
+  // };
 
   const handleSave = () => {
     console.log(`formStore that goes into BE:`);
@@ -132,14 +147,14 @@ export default function CreateBookingModal({
               </Row>
             </Form.Group>
             <Row>
-              <Col xs={12}>Tag attendees:</Col>
               <Col>
-                <ReactTags
-                  suggestions={props.suggestions}
-                  tags={props.tags}
-                  onDelete={onDelete}
-                  onAddition={onAddition}
-                  noSuggestionsText="User not found; Please enter valid user"
+                <TaggingField
+                  suggestionsProp={suggestionsProp}
+                  tagsProp={tagsProp}
+                  setTagsProp={setTagsProp}
+                  labelProp="Attendees"
+                  dispatchBookingForm={dispatchBookingForm}
+                  tagSelf={true}
                 />
               </Col>
             </Row>
