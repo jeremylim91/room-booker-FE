@@ -306,3 +306,17 @@ export function deleteABooking(setMtgIsDeleted, bookingId) {
     })
     .catch((error) => console.log(error));
 }
+// update DB with new info about bookings (made via dashboard component)
+export function updateBooking(newBookingInfo) {
+  console.log(`inside updateBookings in store`);
+
+  return (
+    Axios.put('/bookings/updateBooking', newBookingInfo)
+      // return axios
+      //   .put('/bookings/updateBooking', {newBookingInfo}, {withCredentials: true})
+      .then(({data}) => {
+        if (data === 'disallow') alert('Unauthorised action');
+      })
+      .catch((error) => console.log(error))
+  );
+}

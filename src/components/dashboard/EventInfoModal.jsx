@@ -1,7 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {Modal, Button, Container, Row, Col} from 'react-bootstrap';
 import moment from 'moment';
-import {getAllAttendeesByBookingId, deleteABooking} from '../../store.jsx';
+import {
+  getAllAttendeesByBookingId,
+  deleteABooking,
+  updateBooking,
+} from '../../store.jsx';
 import {
   getUserIdFromCookie,
   getIsAdminFromCookie,
@@ -20,7 +24,7 @@ export default function EventInfoModal({show, handleClose, event}) {
 
   useEffect(() => {
     getAllAttendeesByBookingId(setTagsProp, event.id);
-  }, [mtgIsDeleted]);
+  }, [mtgIsDeleted, handleClose]);
   useEffect(() => {
     getUsers(setSuggestionsProp);
   }, []);
@@ -54,7 +58,9 @@ export default function EventInfoModal({show, handleClose, event}) {
   };
 
   const handleSave = () => {
+    const {id: bookingId} = event;
     // make an update query to BE
+    updateBooking({tagsProp, agendaInputField, bookingId});
     handleClose();
   };
 
