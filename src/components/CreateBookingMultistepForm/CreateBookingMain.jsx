@@ -46,7 +46,7 @@ export default function CreateBookingMain() {
     }
   }, []);
 
-  const manageListingCreationForm = () => {
+  const manageBookingCreationForm = () => {
     switch (mode) {
       case SELECT_ROOM:
         return <SelectRoom setMode={setMode} />;
@@ -63,7 +63,7 @@ export default function CreateBookingMain() {
   return (
     <div className="container">
       <CreateBookingProvider>
-        {manageListingCreationForm()}
+        {manageBookingCreationForm()}
       </CreateBookingProvider>
     </div>
   );
