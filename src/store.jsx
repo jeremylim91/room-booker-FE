@@ -32,6 +32,16 @@ const SET_USERNAME = 'SET_USERNAME';
 const SET_USERID = 'SET_USERID';
 const SET_EMAIL = 'SET_EMAIL';
 
+export const dashboardFilters = {
+  ALL_MEETINGS: 'All Meetings',
+  MY_MEETINGS: 'My Meetings',
+
+  ANY: 'All resources',
+  ONYX: 'Onyx',
+  PARK: 'Park',
+  HALO: 'Halo',
+};
+
 // define the matching reducer function
 export function roomBookerReducer(state, action) {
   switch (action.type) {
@@ -113,6 +123,11 @@ export function RoomBookerProvider({children}) {
  * ********************************
  */
 
+const Axios = axios.create({
+  withCredentials: true,
+  baseURL: BACKEND_URL,
+});
+
 // In this section we extract out the
 // code that makes requests to the backend
 //
@@ -175,7 +190,7 @@ export function validateUserSignIn(signInData, dispatch) {
 
 // get all meetings that are associated w/ the user (this shld include user-booke AND user-tagged)
 export function getAllEventsByUserId(setAllEventsByUserId) {
-  axios
+  return axios
     .get(`${BACKEND_URL}/bookings/bookingsByUserId`, {
       withCredentials: true,
     })
@@ -188,7 +203,106 @@ export function getAllEventsByUserId(setAllEventsByUserId) {
           elem.endTime = new Date(elem.endTime);
         })
       );
+      console.log(`all meetings associated with user is:`);
+      console.log(data);
       setAllEventsByUserId(data);
+    })
+    .catch((error) => console.log(error));
+}
+// export function getAllEventsByUserId(setAllEventsByUserId) {
+//   return axios
+//     .get(`${BACKEND_URL}/bookings/bookingsByUserId`, {
+//       withCredentials: true,
+//     })
+//     .then(({data}) => {
+//       // convert all dates to js dates, else it breaks the calendar
+//       Object.keys(data).forEach((key) =>
+//         data[`${key}`].forEach((elem) => {
+//           elem.bookingDate = new Date(elem.bookingDate);
+//           elem.startTime = new Date(elem.startTime);
+//           elem.endTime = new Date(elem.endTime);
+//         })
+//       );
+//       console.log(`all meetings associated with user is:`);
+//       console.log(data);
+//       setAllEventsByUserId(data);
+//     })
+//     .catch((error) => console.log(error));
+// }
+// get all attendees of a specified meeting
+export async function getCalendarEventsDisplay(setCalendarEventDisplay) {
+  try {
+    let [getAllMeetings, getUserMeetings] = await Promise.all([
+      Axios.get('/bookings/all'),
+      Axios.get('/bookings/bookingsByUserId'),
+    ]);
+
+    // remove duplicates between userTaggedMtgs and userBookedMtgs
+    console.log(`getAllMeetings in store:`);
+    console.log(getAllMeetings);
+    console.log('getUserMeetings in store');
+    console.log(getUserMeetings);
+    const makeListOfUniqueMtgs = (list1, list2) => {
+      const nonUniqueListOfMtgs = [...list1, ...list2];
+      const result = [];
+      const map = new Map();
+      for (const meeting of nonUniqueListOfMtgs) {
+        if (!map.has(meeting.id)) {
+          map.set(meeting.id, meeting.id); // set any value to Map
+          result.push({
+            id: meeting.id,
+            agenda: meeting.agenda,
+            startTime: meeting.startTime,
+            endTime: meeting.endTime,
+            roomId: meeting.roomId,
+            userId: meeting.userId ? meeting.userId : null,
+          });
+        }
+      }
+      return result;
+    };
+    const userMeetings = makeListOfUniqueMtgs(
+      getUserMeetings.data.userBookedMeetings,
+      getUserMeetings.data.userTaggedMeetings
+    );
+    const allMeetings = getAllMeetings.data;
+    setCalendarEventDisplay({
+      userMeetings,
+      allMeetings,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// query the db to get list of mtg attendees acc to a booking id.
+export function getAllAttendeesByBookingId(setMtgAttendees, bookingId) {
+  console.log(`bookingId in 'store'`);
+  console.log(bookingId);
+  return axios
+    .get(`${BACKEND_URL}/bookings/mtgAttendees/${bookingId}`, {
+      withCredentials: true,
+    })
+    .then(({data}) => {
+      // convert each data's 'username' key to 'name' so tt it will work with the external lib
+      for (let i = 0; i < data.length; i += 1) {
+        data[i].name = data[i]['username'];
+        delete data[i].username;
+      }
+      console.log(`data in store:`);
+      console.log(data);
+
+      setMtgAttendees(data);
+    })
+    .catch((error) => console.log(error));
+}
+// Updte the db to change a booking's isDeleted field to false
+export function deleteABooking(setMtgIsDeleted, bookingId) {
+  return Axios.put('/bookings/deleteABooking', {bookingId})
+    .then(({data}) => {
+      if (data === 'disallow') alert('Unauthorised action');
+      setMtgIsDeleted(true);
+      window.location = '/dashboard';
     })
     .catch((error) => console.log(error));
 }
