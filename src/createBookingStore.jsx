@@ -238,24 +238,39 @@ export function getRoomCatalogue(setRoomCatalogue) {
     });
 }
 // get all users
-export function getUsers(setLocalState, newProps) {
+export function getUsers(setLocalState) {
   return axios
     .get(`${BACKEND_URL}/users/findAll`, {withCredentials: true})
     .then(({data}) => {
-      console.log(`data returned to client from getUsers fn`);
-      console.log(data);
       // convert each data's 'username' key to 'name' so tt it will work with the external lib
-      for (let i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i += 1) {
         data[i].name = data[i]['username'];
         delete data[i].username;
       }
-      newProps.suggestions = data;
-      setLocalState(newProps);
+      setLocalState(data);
     })
     .catch((err) => {
       console.log(err);
     });
 }
+// export function getUsers(setLocalState, newProps) {
+//   return axios
+//     .get(`${BACKEND_URL}/users/findAll`, {withCredentials: true})
+//     .then(({data}) => {
+//       console.log(`data returned to client from getUsers fn`);
+//       console.log(data);
+//       // convert each data's 'username' key to 'name' so tt it will work with the external lib
+//       for (let i = 0; i < data.length; i++) {
+//         data[i].name = data[i]['username'];
+//         delete data[i].username;
+//       }
+//       newProps.suggestions = data;
+//       setLocalState(newProps);
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// }
 // get all the events tied to a given room
 export function getAllEvents(setLocalState, roomId) {
   return axios
