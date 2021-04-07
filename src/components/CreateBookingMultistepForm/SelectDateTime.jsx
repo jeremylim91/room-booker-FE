@@ -25,12 +25,9 @@ const localizer = momentLocalizer(moment);
 
 export default function SelectDateTime({setMode}) {
   // destructure imported vars
-  const {
-    formStore,
-    dispatchBookingForm,
-    handleOnChange,
-    formLocalStorage,
-  } = useContext(CreateBookingContext);
+  const {formStore, dispatchBookingForm, formLocalStorage} = useContext(
+    CreateBookingContext
+  );
 
   // logic that tells app to get roomId if alr in local storage, else get it from global state
   const roomId = formLocalStorage.roomId
@@ -50,11 +47,6 @@ export default function SelectDateTime({setMode}) {
 
   useEffect(() => {
     getAllEvents(setAllEvents, roomId);
-    // for now, doesn't seem to be a need for the dates to persist (takes up local storage unecessarily)
-    // writeStorage(CREATE_BOOKING_FORM, {
-    //   ...formLocalStorage,
-    //   [CAL_EVENTS_BY_ROOM_ID]: allEvents,
-    // });
   }, []);
   const handleNextPage = () => {
     setMode(SELECT_DATE_TIME);
@@ -87,7 +79,7 @@ export default function SelectDateTime({setMode}) {
           handleCreateEvent(e);
         }}
         onSelectEvent={(event) => alert(event.title)}
-        defaultView="month"
+        defaultView="week"
         views={['month', 'week', 'day']}
         // Determines the selectable time increments in week and day views
         step={30}
