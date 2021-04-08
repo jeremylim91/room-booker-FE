@@ -1,21 +1,22 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Modal, Button} from 'react-bootstrap';
-import {RoomBookerContext, deleteUser} from '../../store.jsx';
+import {deleteUser} from '../../store.jsx';
 
 export default function WarningModal(
   ChildComponent,
   show,
   handleClose,
-  props,
-  setProps
+  taggedUsers,
+  setTaggedUsers,
+  renderTrigger,
+  forceRender
 ) {
-  const [deleteUserCompleted, setDeleteUserCompleted] = useState('');
-
   const handleDeleteUser = () => {
-    const newProps = {...props};
-    deleteUser(newProps, setProps);
-    window.location.reload();
-    // handleClose();
+    const newTaggedUsers = [...taggedUsers];
+    deleteUser(newTaggedUsers, setTaggedUsers);
+    // window.location.reload();
+    handleClose();
+    // renderTrigger.current += 1;
   };
   return (
     <>
@@ -24,7 +25,7 @@ export default function WarningModal(
           <Modal.Title>Attention!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <ChildComponent users={props.tags} />
+          <ChildComponent users={taggedUsers} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
