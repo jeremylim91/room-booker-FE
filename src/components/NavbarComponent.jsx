@@ -47,15 +47,21 @@ export default function NavbarComponent() {
         />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            {getIsAdminFromCookie === true && (
-              <LinkContainer to="/manageUsers" onClick={collapseNavBar}>
-                <Nav.Link>Manage Users</Nav.Link>
+            {/* conditionally render this component if store registers that user is logged in */}
+            {store.loggedInEmail && (
+              <LinkContainer to="/createBooking" onClick={collapseNavBar}>
+                <Nav.Link>Book room</Nav.Link>
               </LinkContainer>
             )}
             {/* conditionally render this component if store registers that user is logged in */}
             {store.loggedInEmail && (
               <LinkContainer to="/dashboard" onClick={collapseNavBar}>
                 <Nav.Link>Dashboard</Nav.Link>
+              </LinkContainer>
+            )}
+            {getIsAdminFromCookie === true && (
+              <LinkContainer to="/manageUsers" onClick={collapseNavBar}>
+                <Nav.Link>Manage Users</Nav.Link>
               </LinkContainer>
             )}
           </Nav>
