@@ -2,6 +2,7 @@ import React, {useReducer} from 'react';
 import {writeStorage, useLocalStorage} from '@rehooks/local-storage';
 import axios from 'axios';
 import {BACKEND_URL} from './store.jsx';
+import moment from 'moment';
 
 // This store deals solely with what goes on in the multistep form
 
@@ -272,7 +273,7 @@ export function getUsers(setLocalState) {
 //     });
 // }
 // get all the events tied to a given room
-export function getAllEvents(setLocalState, roomId) {
+export function getAllEvents(setLocalState, roomId, dict) {
   return axios
     .get(`${BACKEND_URL}/bookings/bookingsBasedOnRoomId/${roomId}`, {
       withCredentials: true,
@@ -285,6 +286,23 @@ export function getAllEvents(setLocalState, roomId) {
         elem.endTime = new Date(elem.endTime);
       });
       setLocalState(data);
+
+      data.forEach((singleEvent) => {
+        const eventDate = moment(singleEvent.startTime).format('l');
+        // console.log(`testing didct`);
+        // console.log(dict[`${eventDate}`]);
+        // if the key alr exists, push the singleEvent into the dictionary
+        if (dict[`${eventDate}`] !== undefined) {
+          dict[`${eventDate}`].push(singleEvent);
+        }
+        // if the key does not yet exist, create it and set the value to be an array containing the single event
+        else {
+          dict[`${eventDate}`] = [singleEvent];
+        }
+      });
+      console.log('completed loop');
+      console.log(`dict in loop:`);
+      console.log(dict);
     })
     .catch((err) => {
       console.log(err);
