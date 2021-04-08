@@ -1,13 +1,11 @@
 import React, {useState, useEffect, useContext, useRef} from 'react';
 import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 import {getUsers} from '../../createBookingStore.jsx';
-import ReactTags from 'react-tag-autocomplete';
 import {RoomBookerContext, deleteUser, createUser} from '../../store.jsx';
 import {onAddition, onDelete} from '../../utils/autocompleteRelatedFns.mjs';
-import WarningMessageAboutDeletion from './WarningMessageAboutDeletion.jsx';
-// import WarningModal from '../HOCs/WarningModal.jsx';
 import TaggingField from '../HOCs/TaggingField.jsx';
 import WarningModal from './WarningModal.jsx';
+import '../../styles/manageUsers.scss';
 
 // add and delete users
 export default function ManageUsers() {
@@ -82,115 +80,123 @@ export default function ManageUsers() {
       <Container fluid>
         <Row>
           <Col xs={12} md={6} className="mt-4">
-            <h3> Remove User(s)</h3>
-            <Row>
-              <Col xs={12}>
-                <TaggingField
-                  suggestionsProp={suggestionsProp}
-                  setSuggestionsProp={setSuggestionsProp}
-                  tagsProp={tagsProp}
-                  setTagsProp={setTagsProp}
-                  labelProp="Find User(s)"
-                />
-              </Col>
-              <Col xs={12}>
-                <Button
-                  variant="outline-danger"
-                  onClick={handleClickDelete}
-                  className="mt-3">
-                  Delete user
-                </Button>
-              </Col>
-            </Row>
+            <div className="shadow-sm p-2">
+              <h3> Remove User(s)</h3>
+              <Row>
+                <Col xs={12}>
+                  <TaggingField
+                    suggestionsProp={suggestionsProp}
+                    setSuggestionsProp={setSuggestionsProp}
+                    tagsProp={tagsProp}
+                    setTagsProp={setTagsProp}
+                    labelProp="Find User(s)"
+                  />
+                </Col>
+                <Col xs={12} className="action-btns">
+                  <Button
+                    variant="outline-danger"
+                    onClick={handleClickDelete}
+                    className="mt-3 mb-4">
+                    Delete user
+                  </Button>
+                </Col>
+              </Row>
+            </div>
           </Col>
           <Col xs={12} md={6} className="mt-4">
-            <h3>Add User </h3>
-            <Row>
-              <Col>
-                <Form>
-                  <Form.Group
-                    className=" mt-3"
-                    controlId="add-user-details-form ">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      name="email"
-                      type="text"
-                      placeholder="Enter email address"
-                      value={
-                        // formLocalStorage.title
-                        // ? formLocalStorage.title:
-                        newUserDetails.email
-                      }
-                      // need to update this with dispatch fn
-                      onChange={(e) => handleTextInputChange(e, 'email')}
-                      required
-                    />
-                    <Form.Text className="text-muted">
-                      {'This email will be used for login'}
-                    </Form.Text>
-                  </Form.Group>
+            <div className="shadow-sm p-2">
+              <h3>Add User </h3>
+              <Row>
+                <Col>
+                  <Form>
+                    <Form.Group
+                      className=" mt-3"
+                      controlId="add-user-details-form ">
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        name="email"
+                        type="text"
+                        placeholder="Enter email address"
+                        value={
+                          // formLocalStorage.title
+                          // ? formLocalStorage.title:
+                          newUserDetails.email
+                        }
+                        // need to update this with dispatch fn
+                        onChange={(e) => handleTextInputChange(e, 'email')}
+                        required
+                      />
+                      <Form.Text className="text-muted">
+                        {'This email will be used for login'}
+                      </Form.Text>
+                    </Form.Group>
 
-                  <Form.Group
-                    className=" mt-3"
-                    controlId="add-user-details-form ">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control
-                      name="username"
-                      type="text"
-                      placeholder="Enter username"
-                      value={
-                        // formLocalStorage.title
-                        // ? formLocalStorage.title:
-                        newUserDetails.username
-                      }
-                      // need to update this with dispatch fn
-                      onChange={(e) => handleTextInputChange(e, 'username')}
-                      required
-                    />
-                    <Form.Text className="text-muted">
-                      {'Username will be used for tagging users to meetings'}
-                    </Form.Text>
-                  </Form.Group>
+                    <Form.Group
+                      className=" mt-3"
+                      controlId="add-user-details-form ">
+                      <Form.Label>Username</Form.Label>
+                      <Form.Control
+                        name="username"
+                        type="text"
+                        placeholder="Enter username"
+                        value={
+                          // formLocalStorage.title
+                          // ? formLocalStorage.title:
+                          newUserDetails.username
+                        }
+                        // need to update this with dispatch fn
+                        onChange={(e) => handleTextInputChange(e, 'username')}
+                        required
+                      />
+                      <Form.Text className="text-muted">
+                        {'Username will be used for tagging users to meetings'}
+                      </Form.Text>
+                    </Form.Group>
 
-                  <Form.Group
-                    className=" mt-3"
-                    controlId="add-user-details-form ">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      name="password"
-                      type="text"
-                      placeholder="Default if blank: password1"
-                      value={
-                        // formLocalStorage.title
-                        // ? formLocalStorage.title:
-                        newUserDetails.password
-                      }
-                      // need to update this with dispatch fn
-                      onChange={(e) => handleTextInputChange(e, 'password')}
-                      required
-                    />
-                    <Form.Text className="text-muted">
-                      {
-                        'Users are advised to change their password upon first login'
-                      }
-                    </Form.Text>
-                  </Form.Group>
+                    <Form.Group
+                      className=" mt-3"
+                      controlId="add-user-details-form ">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        name="password"
+                        type="text"
+                        placeholder="Default if blank: password1"
+                        value={
+                          // formLocalStorage.title
+                          // ? formLocalStorage.title:
+                          newUserDetails.password
+                        }
+                        // need to update this with dispatch fn
+                        onChange={(e) => handleTextInputChange(e, 'password')}
+                        required
+                      />
+                      <Form.Text className="text-muted">
+                        {
+                          'Users are advised to change their password upon first login'
+                        }
+                      </Form.Text>
+                    </Form.Group>
 
-                  <Form.Group controlId="add-user-details-form">
-                    <Form.Check
-                      type="checkbox"
-                      label="Grant new user admin rights"
-                      value={newUserDetails.isAdmin}
-                      onChange={(e) => handleCheckBoxToggle(e, 'isAdmin')}
-                    />
-                  </Form.Group>
-
-                  <Button variant="outline-primary" onClick={handleCreateUser}>
-                    Create user
-                  </Button>
-                </Form>
-              </Col>
-            </Row>
+                    <Form.Group controlId="add-user-details-form">
+                      <Form.Check
+                        type="checkbox"
+                        label="Grant new user admin rights"
+                        value={newUserDetails.isAdmin}
+                        onChange={(e) => handleCheckBoxToggle(e, 'isAdmin')}
+                      />
+                    </Form.Group>
+                    <Col xs={12} className="action-btns ">
+                      <Button
+                        className="mt-3 mb-4"
+                        variant="outline-primary"
+                        onClick={handleCreateUser}>
+                        Create user
+                      </Button>
+                    </Col>
+                  </Form>
+                </Col>
+              </Row>
+            </div>
           </Col>
         </Row>
       </Container>
