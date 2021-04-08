@@ -1,9 +1,9 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {Form, Button, Container, Row, Col, Modal} from 'react-bootstrap';
 import moment from 'moment';
-import ReactTags from 'react-tag-autocomplete';
 import '../../styles/createBookingModal.scss';
 import TaggingField from '../HOCs/TaggingField.jsx';
+import {useHistory} from 'react-router-dom';
 
 import {writeStorage, deleteFromStorage} from '@rehooks/local-storage';
 import {
@@ -90,14 +90,13 @@ export default function CreateBookingModal({
   //   dispatchBookingForm(updateAttendeesAction(newProps.tags));
   //   setProps(newProps);
   // };
-
+  const history = useHistory();
   const handleSave = () => {
     console.log(`formStore that goes into BE:`);
     console.log(formStore);
-    saveNewMeeting(setIsMeetingSaved, formStore);
+    saveNewMeeting(history, formStore);
     deleteFromStorage(CREATE_BOOKING_FORM);
     deleteFromStorage(FORM_STEP);
-    window.location = '/dashboard';
   };
 
   return (

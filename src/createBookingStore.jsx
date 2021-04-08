@@ -290,12 +290,13 @@ export function getAllEvents(setLocalState, roomId) {
       console.log(err);
     });
 }
+
 // save new meeting to the db
-export function saveNewMeeting(setLocalState, meetingDetails) {
+export function saveNewMeeting(history, meetingDetails) {
   return axios
     .post(`${BACKEND_URL}/bookings`, {meetingDetails}, {withCredentials: true})
     .then(({data}) => {
-      setLocalState(true);
+      history.push('/dashboard');
     })
     .catch((err) => {
       console.log(err);
