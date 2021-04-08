@@ -2,7 +2,7 @@
 
 .banner {
   display: inline-block;
-  background: rgba(0, 0, 0, 0.351);
+  background: rgba(0, 0, 0, 0.5);
   color: var(--mainWhite);
   padding: 2rem 1rem;
   text-align: center;
@@ -29,5 +29,14 @@
     center/cover no-repeat;
   display: flex;
   align-items: center;
+  justify-content: center;
+}
+
+.amenities {
+  background-color: #cfcfcf;
+}
+
+.amenities-col {
+  display: flex;
   justify-content: center;
 }
