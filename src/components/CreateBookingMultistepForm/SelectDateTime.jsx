@@ -44,25 +44,27 @@ export default function SelectDateTime({setMode}) {
   // ==================================================
   // ============useEfects=============================
   // Redirect user to error page if not signed in
-  useEffect(() => {
-    const loggedInUserId = getUserIdFromCookie();
-    if (!loggedInUserId) {
-      window.location = '/error';
-    }
-  }, []);
+
   useEffect(() => {
     getAllEvents(setAllEvents, roomId, dict);
   }, []);
   // ==================================================
+  // ============Other React Hooks=============================
+  const history = useHistory();
+  const useRefContainer = useRef({});
+  // ==================================================
 
+  const loggedInUserId = getUserIdFromCookie();
+  if (!loggedInUserId) {
+    window.location = '/error';
+    return;
+  }
   // fns to handle open/close of Modal
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const useRefContainer = useRef({});
   const dict = useRefContainer.current;
 
-  const history = useHistory();
   const handleCancelForm = () => {
     deleteFromStorage(CREATE_BOOKING_FORM);
     deleteFromStorage(FORM_STEP);
