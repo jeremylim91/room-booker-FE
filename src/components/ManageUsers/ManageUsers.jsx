@@ -6,6 +6,7 @@ import {onAddition, onDelete} from '../../utils/autocompleteRelatedFns.mjs';
 import TaggingField from '../HOCs/TaggingField.jsx';
 import WarningModal from './WarningModal.jsx';
 import '../../styles/manageUsers.scss';
+import {getUserIdFromCookie} from '../../utils/cookieRelatedFns.mjs';
 
 // add and delete users
 export default function ManageUsers() {
@@ -38,14 +39,24 @@ export default function ManageUsers() {
 
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  // ============useEfects=============================
+  // Redirect user to error page if not signed in
+  useEffect(() => {
+    const loggedInUserId = getUserIdFromCookie();
+    if (!loggedInUserId) {
+      window.location = '/error';
+    }
+  }, []);
 
   // get all user data
   // query the db to get all users and their id
   useEffect(() => {
     getUsers(setSuggestionsProp);
   }, [tagsProp, show]);
+
+  // =================================================
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const handleTextInputChange = (e, field) => {
     const newNewUserDetails = {...newUserDetails};
@@ -71,9 +82,6 @@ export default function ManageUsers() {
     renderTrigger.current += 1;
     console.log(renderTrigger);
   };
-
-  console.log(`tagsProp in dashbaord is:`);
-  console.log(tagsProp);
 
   return (
     <div>
@@ -117,11 +125,7 @@ export default function ManageUsers() {
                         name="email"
                         type="text"
                         placeholder="Enter email address"
-                        value={
-                          // formLocalStorage.title
-                          // ? formLocalStorage.title:
-                          newUserDetails.email
-                        }
+                        value={newUserDetails.email}
                         // need to update this with dispatch fn
                         onChange={(e) => handleTextInputChange(e, 'email')}
                         required
@@ -139,11 +143,7 @@ export default function ManageUsers() {
                         name="username"
                         type="text"
                         placeholder="Enter username"
-                        value={
-                          // formLocalStorage.title
-                          // ? formLocalStorage.title:
-                          newUserDetails.username
-                        }
+                        value={newUserDetails.username}
                         // need to update this with dispatch fn
                         onChange={(e) => handleTextInputChange(e, 'username')}
                         required
