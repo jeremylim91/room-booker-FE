@@ -11,6 +11,7 @@ import UsernameBtn from './SignInAndRegistration/UsernameBtn.jsx';
 import {
   getUsernameFromCookie,
   getUserIdFromCookie,
+  getIsAdminFromCookie,
 } from '../utils/cookieRelatedFns.mjs';
 
 export default function NavbarComponent() {
@@ -34,7 +35,7 @@ export default function NavbarComponent() {
   return (
     <>
       <Navbar expanded={expanded} bg="light" expand="lg">
-        <LinkContainer exact to="/">
+        <LinkContainer exact to="/" onClick={collapseNavBar}>
           <Navbar.Brand>
             {/* <img src="groupbuy_icon3.svg" alt="img" width="80px" /> */}
             <div className="Room Booker-brand">Room Booker </div>
@@ -46,18 +47,17 @@ export default function NavbarComponent() {
         />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <LinkContainer to="/manageUsers" onClick={collapseNavBar}>
-              <Nav.Link>Manage Users</Nav.Link>
-            </LinkContainer>
-            <LinkContainer to="/dashboard" onClick={collapseNavBar}>
-              <Nav.Link>Dashboard</Nav.Link>
-            </LinkContainer>
-            {/* <LinkContainer to="/payment">
-              <Nav.Link>[test] payment</Nav.Link>
-            </LinkContainer> */}
-            {/* <LinkContainer to="/MyProfile" onClick={collapseNavBar}>
-              <Nav.Link>Profile</Nav.Link>
-            </LinkContainer> */}
+            {getIsAdminFromCookie === true && (
+              <LinkContainer to="/manageUsers" onClick={collapseNavBar}>
+                <Nav.Link>Manage Users</Nav.Link>
+              </LinkContainer>
+            )}
+            {/* conditionally render this component if store registers that user is logged in */}
+            {store.loggedInEmail && (
+              <LinkContainer to="/dashboard" onClick={collapseNavBar}>
+                <Nav.Link>Dashboard</Nav.Link>
+              </LinkContainer>
+            )}
           </Nav>
           <Nav className="ml-auto">
             {store.loggedInEmail ? (
