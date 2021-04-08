@@ -11,15 +11,12 @@ export default function Amenities() {
     {
       icon: <FaConciergeBell />,
       title: 'Concierge Service',
-      info: `Our on-site concierge provides the following services:
-          1. Ordering refreshments/meals for meetings
-          2. Troubleshooting IT devices (e.g. presentation aids)
-          `,
+      info: `Instantly get help with ICT troubleshooting`,
     },
     {
       icon: <AiOutlineFundProjectionScreen />,
       title: 'Presentation aids',
-      info: `All our meeting rooms are equipped with a range of digital and analogue presentation aids, ranging from projectors to whiteboards.`,
+      info: `All our meeting rooms are equipped with a range of digital and analogue presentation aids`,
     },
     {
       icon: <MdLocalDrink />,
@@ -31,11 +28,11 @@ export default function Amenities() {
   const DisplayAmenities = () => {
     return amenities.map((amenity, idx) => {
       return (
-        <Col className="amenities-col">
+        <Col className="amenities-col justify-content-center mt-2">
           <article key={idx} className="amenities">
-            <span>{amenity.icon}</span>
-            <h6>{amenity.title}</h6>
-            <p>{amenity.info}</p>
+            <div className="amenity-details amenities-card">{amenity.icon}</div>
+            <h6 className="amenity-details amenities-card">{amenity.title}</h6>
+            <div className="amenity-info amenities-card">{amenity.info}</div>
           </article>
         </Col>
       );

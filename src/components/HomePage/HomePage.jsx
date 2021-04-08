@@ -11,8 +11,8 @@ export default function HomePage() {
     <>
       <Hero>
         <Banner
-          title="That Meeting Place"
-          subtitle="Contemporary meetings rooms for modern needs">
+          title="Room Booker"
+          subtitle="Modern rooms for contemporary needs">
           <Link to="/createBooking" className="btn-primary">
             <Button> BOOK NOW </Button>
           </Link>
