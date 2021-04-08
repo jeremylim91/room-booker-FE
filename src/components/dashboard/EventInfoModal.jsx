@@ -27,7 +27,7 @@ export default function EventInfoModal({show, handleClose, event}) {
   }, [mtgIsDeleted, handleClose]);
   useEffect(() => {
     getUsers(setSuggestionsProp);
-  }, []);
+  }, [handleClose]);
 
   // Shorten the agenda to display it as the modal header
   const shortenAgenda = (str) => {

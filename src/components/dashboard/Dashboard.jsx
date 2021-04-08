@@ -8,7 +8,6 @@ import {
 import {Calendar, momentLocalizer, Views} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
-import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import '../../styles/calendarStyles.scss';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -18,21 +17,12 @@ import {
   getUpperBoundDate,
 } from '../../utils/calendarRelatedFns.mjs';
 import {getEvents} from './events.jsx';
-import {MdSettingsInputAntenna} from 'react-icons/md';
 import {MyToolbar} from './MyToolbar.jsx';
 import {getUserIdFromCookie} from '../../utils/cookieRelatedFns.mjs';
-
-console.log(`Views is:`);
-console.log(Views);
-
-let allViews = Object.keys(Views).map((k) => Views[k]);
-console.log(`allViews is:`);
-console.log(allViews);
 
 // Setup the localizer by providing the moment (or globalize) Object
 // to the correct localizer.
 const localizer = momentLocalizer(moment);
-const DnDCalendar = withDragAndDrop(Calendar);
 
 export default function Dashboard() {
   // destructure imported vars
@@ -52,12 +42,21 @@ export default function Dashboard() {
 
   const [meetingFilter, setMeetingFilter] = useState(MY_MEETINGS);
   const [resourceFilter, setResourceFilter] = useState(ANY);
-
+  // ==================================================
+  // ============useEfects=============================
+  // Redirect user to error page if not signed in
+  useEffect(() => {
+    const loggedInUserId = getUserIdFromCookie();
+    if (!loggedInUserId) {
+      window.location = '/error';
+    }
+  }, []);
   // query db to get data to populate calendar; should hve 1. all meetings, 2. all of user's mtgs
   useEffect(() => {
     getCalendarEventsDisplay(setCalendarEventDisplay);
   }, []);
-  console.log(calendarEventDisplay);
+
+  // ==================================================
 
   // Meeting details that the user inputs
   const [userSelectionDetails, setuserSelectionDetails] = useState({});
@@ -81,15 +80,6 @@ export default function Dashboard() {
     setEvent(e);
     handleShow();
   };
-
-  // const ManageFilterDropdown = (filter, dropdownOptions) => {
-  //   dropdownOptions.forEach((elem, idx) => {
-  //     if (elem === filter) {
-  //       dropdownOptions.splice(idx, 1);
-  //     }
-  //   });
-  //   return dropdownOptions.map((elem) => <Dropdown.Item>{elem}</Dropdown.Item>);
-  // };
 
   const manageDropdownBtnClick = (mode, relevantSetState) => {
     relevantSetState(mode);
@@ -127,8 +117,10 @@ export default function Dashboard() {
     <>
       <Container fluid className="ml-2, mr-2, mt-2">
         <Row>
-          <Col>Filters:</Col>
-          <Col>
+          <Col xs={12} md={2} lg={1} className="mt-2 mb-2">
+            Filters:
+          </Col>
+          <Col xs={12} md={3} lg={2} className="mt-2 mb-2">
             <Dropdown>
               <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
                 {meetingFilter}
@@ -143,7 +135,7 @@ export default function Dashboard() {
               </Dropdown.Menu>
             </Dropdown>
           </Col>
-          <Col>
+          <Col xs={12} md={3} lg={2} className="mt-2 mb-2">
             <Dropdown>
               <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
                 {resourceFilter}
@@ -186,6 +178,8 @@ export default function Dashboard() {
             />
           </Col>
         </Row>
+      </Container>
+      <Container className="agenda-list-view">
         <Row className="mt-3">
           <Col xs={12}>
             <h3> Upcoming this week:</h3>
