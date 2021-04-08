@@ -1,11 +1,13 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 import {getUsers} from '../../createBookingStore.jsx';
 import ReactTags from 'react-tag-autocomplete';
 import {RoomBookerContext, deleteUser, createUser} from '../../store.jsx';
 import {onAddition, onDelete} from '../../utils/autocompleteRelatedFns.mjs';
 import WarningMessageAboutDeletion from './WarningMessageAboutDeletion.jsx';
-import WarningModal from '../HOCs/WarningModal.jsx';
+// import WarningModal from '../HOCs/WarningModal.jsx';
+import TaggingField from '../HOCs/TaggingField.jsx';
+import WarningModal from './WarningModal.jsx';
 
 // add and delete users
 export default function ManageUsers() {
@@ -18,7 +20,15 @@ export default function ManageUsers() {
   } = useContext(RoomBookerContext);
 
   //set a state to hold info tt must be fed into the autocomplete feature
-  const [props, setProps] = useState({suggestions: [], tags: []});
+  const [props, setProps] = useState({suggestions: [], tags: []}); // set a state that contains all mtg attendees that should be tagged in a given meeting
+  const [tagsProp, setTagsProp] = useState([]);
+  // set a state containing all users that should be sugested for autocomplete
+  const [suggestionsProp, setSuggestionsProp] = useState([]);
+
+  const renderTrigger = useRef(1);
+  const [renderTrigger2, setRenderTrigger2] = useState(true);
+
+  const forceRender = () => setRenderTrigger2(!renderTrigger2);
 
   // set a state to hold user details
   const [newUserDetails, setNewUserDetails] = useState({
@@ -36,9 +46,8 @@ export default function ManageUsers() {
   // get all user data
   // query the db to get all users and their id
   useEffect(() => {
-    const newProps = {...props};
-    getUsers(setProps, newProps);
-  }, []);
+    getUsers(setSuggestionsProp);
+  }, [tagsProp, show]);
 
   const handleTextInputChange = (e, field) => {
     const newNewUserDetails = {...newUserDetails};
@@ -55,13 +64,18 @@ export default function ManageUsers() {
 
   // when the user clicks delete, display a warning before allowing user to proceed
   const handleClickDelete = () => {
-    if (props.tags.length === 0) return;
+    if (tagsProp === 0) return;
     handleShow();
   };
 
   const handleCreateUser = () => {
-    createUser(newUserDetails, setNewUserDetails);
+    createUser(newUserDetails, handleClose);
+    renderTrigger.current += 1;
+    console.log(renderTrigger);
   };
+
+  console.log(`tagsProp in dashbaord is:`);
+  console.log(tagsProp);
 
   return (
     <div>
@@ -70,14 +84,13 @@ export default function ManageUsers() {
           <Col xs={12} md={6} className="mt-4">
             <h3> Remove User(s)</h3>
             <Row>
-              <Col xs={12}>Find User(s):</Col>
               <Col xs={12}>
-                <ReactTags
-                  suggestions={props.suggestions}
-                  tags={props.tags}
-                  onDelete={(i) => onDelete(i, props, setProps)}
-                  onAddition={(tag) => onAddition(tag, props, setProps)}
-                  noSuggestionsText="User not found"
+                <TaggingField
+                  suggestionsProp={suggestionsProp}
+                  setSuggestionsProp={setSuggestionsProp}
+                  tagsProp={tagsProp}
+                  setTagsProp={setTagsProp}
+                  labelProp="Find User(s)"
                 />
               </Col>
               <Col xs={12}>
@@ -181,13 +194,13 @@ export default function ManageUsers() {
           </Col>
         </Row>
       </Container>
-      {WarningModal(
-        WarningMessageAboutDeletion,
-        show,
-        handleClose,
-        props,
-        setProps
-      )}
+      <WarningModal
+        show={show}
+        handleClose={handleClose}
+        taggedUsers={tagsProp}
+        setTaggedUsers={setTagsProp}
+        forceRender={forceRender}
+      />
     </div>
   );
 }

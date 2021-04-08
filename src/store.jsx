@@ -136,8 +136,7 @@ const Axios = axios.create({
 // delete a user by switching isDeleted to True;
 // Note: It was a deliberate decision to use "isDeleted" as a flag, instead of wiping the user's data from the DB
 // this was done to retain user data that could come in useful for future analysis
-export function deleteUser(localState, setLocalState) {
-  const usersToDelete = localState.tags;
+export function deleteUser(usersToDelete, setTaggedUsers) {
   return axios
     .put(
       `${BACKEND_URL}/users/delete`,
@@ -146,9 +145,7 @@ export function deleteUser(localState, setLocalState) {
     )
     .then(({data}) => {
       // remove user as a tag
-      let newLocalState = {...localState};
-      newLocalState.tags = [];
-      setLocalState(newLocalState);
+      setTaggedUsers([]);
     })
     .catch((err) => {
       console.log(err);
@@ -156,14 +153,12 @@ export function deleteUser(localState, setLocalState) {
 }
 
 // Create a new user by saving his/her details to the db
-export function createUser(localState, setLocalState) {
-  console.log(`localState in createUser Fn in store`);
-  console.log(localState);
+export function createUser(localState, handleClose) {
   return axios
     .post(`${BACKEND_URL}/users/create`, {localState}, {withCredentials: true})
     .then(({data}) => {
       alert('New user created successfully!');
-      window.location.reload();
+      handleClose();
     })
     .catch((err) => {
       console.log(err);
