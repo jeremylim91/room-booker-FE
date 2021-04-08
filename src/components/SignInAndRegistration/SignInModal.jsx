@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {Modal, Nav} from 'react-bootstrap';
 import SignInForm from './SignInForm.jsx';
-import RegistrationForm from './RegistrationForm.jsx';
 
 export default function SignInModal({collapseNavBar}) {
   const [show, setShow] = useState(false);

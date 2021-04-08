@@ -7,7 +7,6 @@ import {RoomBookerProvider} from './store.jsx';
 import HomePage from './components/HomePage/HomePage.jsx';
 import CreateBookingMain from './components/CreateBookingMultistepForm/CreateBookingMain.jsx';
 import Dashboard from './components/dashboard/Dashboard.jsx';
-import {CreateBookingContext} from './createBookingStore';
 import ManageUsers from './components/ManageUsers/ManageUsers';
 import NotSignedInErrorPage from './components/SignInAndRegistration/NotSignedInErrorPage.jsx';
 

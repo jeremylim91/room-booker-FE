@@ -49,8 +49,7 @@ export default function EventInfoModal({show, handleClose, event}) {
 
   const handleDelete = () => {
     // update the db to change selected item's isDeleted field to true
-    deleteABooking(setMtgIsDeleted, event.id);
-    handleClose();
+    deleteABooking(handleClose, event.id);
   };
 
   const checkIfUserIsAdminOrBookingOwner = () => {

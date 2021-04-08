@@ -21,11 +21,7 @@ export const initialState = {
   detailsOfNewMeeting: [],
 };
 
-// just like the todo app, define each action we want to do on the
-// data we defined above
-const LOAD_UPCOMING_MEETINGS = 'LOAD_UPCOMING_MEETINGS';
-const LOAD_CURR_USER_MEETINGS = 'LOAD_CURR_USER_MEETINGS';
-const CREATE_NEW_MEETING = 'CREATE_NEW_MEETING';
+// Define each action we want to do on the data we defined above
 
 // Used for tracking currUsername and currUserId
 const SET_USERNAME = 'SET_USERNAME';
@@ -128,10 +124,7 @@ const Axios = axios.create({
   baseURL: BACKEND_URL,
 });
 
-// In this section we extract out the
-// code that makes requests to the backend
-//
-// these functions must be passed the dispatch from the current context
+// In this section, Extract out the code that makes requests to the backend
 
 // delete a user by switching isDeleted to True;
 // Note: It was a deliberate decision to use "isDeleted" as a flag, instead of wiping the user's data from the DB
@@ -170,12 +163,6 @@ export function validateUserSignIn(signInData, dispatch) {
   axios
     .put(`${BACKEND_URL}/signIn`, signInData, {withCredentials: true})
     .then(({data}) => {
-      console.log(`data.user.email returned from /signin fn `);
-      console.log(data.user.email);
-      // reset the username and password fields
-      // setUsernameInput('');
-      // setPasswordInput('');
-      // if (data.auth) {
       dispatch(setLoggedInEmail(data.user.email));
       dispatch(setLoggedInUsername(data.user.username));
       dispatch(setLoggedInUserId(data.user.id));
@@ -198,33 +185,10 @@ export function getAllEventsByUserId(setAllEventsByUserId) {
           elem.endTime = new Date(elem.endTime);
         })
       );
-      console.log(`all meetings associated with user is:`);
-      console.log(data);
       setAllEventsByUserId(data);
     })
     .catch((error) => console.log(error));
 }
-// export function getAllEventsByUserId(setAllEventsByUserId) {
-//   return axios
-//     .get(`${BACKEND_URL}/bookings/bookingsByUserId`, {
-//       withCredentials: true,
-//     })
-//     .then(({data}) => {
-//       // convert all dates to js dates, else it breaks the calendar
-//       Object.keys(data).forEach((key) =>
-//         data[`${key}`].forEach((elem) => {
-//           elem.bookingDate = new Date(elem.bookingDate);
-//           elem.startTime = new Date(elem.startTime);
-//           elem.endTime = new Date(elem.endTime);
-//         })
-//       );
-//       console.log(`all meetings associated with user is:`);
-//       console.log(data);
-//       setAllEventsByUserId(data);
-//     })
-//     .catch((error) => console.log(error));
-// }
-// get all attendees of a specified meeting
 export async function getCalendarEventsDisplay(setCalendarEventDisplay) {
   try {
     let [getAllMeetings, getUserMeetings] = await Promise.all([
@@ -233,10 +197,6 @@ export async function getCalendarEventsDisplay(setCalendarEventDisplay) {
     ]);
 
     // remove duplicates between userTaggedMtgs and userBookedMtgs
-    console.log(`getAllMeetings in store:`);
-    console.log(getAllMeetings);
-    console.log('getUserMeetings in store');
-    console.log(getUserMeetings);
     const makeListOfUniqueMtgs = (list1, list2) => {
       const nonUniqueListOfMtgs = [...list1, ...list2];
       const result = [];
@@ -272,8 +232,6 @@ export async function getCalendarEventsDisplay(setCalendarEventDisplay) {
 
 // query the db to get list of mtg attendees acc to a booking id.
 export function getAllAttendeesByBookingId(setMtgAttendees, bookingId) {
-  console.log(`bookingId in 'store'`);
-  console.log(bookingId);
   return axios
     .get(`${BACKEND_URL}/bookings/mtgAttendees/${bookingId}`, {
       withCredentials: true,
@@ -284,27 +242,21 @@ export function getAllAttendeesByBookingId(setMtgAttendees, bookingId) {
         data[i].name = data[i]['username'];
         delete data[i].username;
       }
-      console.log(`data in store:`);
-      console.log(data);
-
       setMtgAttendees(data);
     })
     .catch((error) => console.log(error));
 }
 // Updte the db to change a booking's isDeleted field to false
-export function deleteABooking(setMtgIsDeleted, bookingId) {
+export function deleteABooking(handleClose, bookingId) {
   return Axios.put('/bookings/deleteABooking', {bookingId})
     .then(({data}) => {
       if (data === 'disallow') alert('Unauthorised action');
-      setMtgIsDeleted(true);
-      window.location = '/dashboard';
+      handleClose();
     })
     .catch((error) => console.log(error));
 }
 // update DB with new info about bookings (made via dashboard component)
 export function updateBooking(newBookingInfo) {
-  console.log(`inside updateBookings in store`);
-
   return (
     Axios.put('/bookings/updateBooking', newBookingInfo)
       // return axios

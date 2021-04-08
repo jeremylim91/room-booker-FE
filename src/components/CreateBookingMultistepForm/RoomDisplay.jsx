@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {Container, Row, Col, Button} from 'react-bootstrap';
+import {Row, Col, Button} from 'react-bootstrap';
 import {
   CreateBookingContext,
   CREATE_BOOKING_FORM,
@@ -31,14 +31,9 @@ export default function RoomDisplay({
     writeStorage(FORM_STEP, SELECT_DATE_TIME);
   };
 
-  // const handleBtnClick = () => {
-  //   handleRoomSelection();
-  //   handleNextPage();
-  // };
   return (
     <Row>
       <Col xs={8}>
-        {/* place image here */}
         <img
           src={`${roomPhotoUrl}`}
           alt="respective room"

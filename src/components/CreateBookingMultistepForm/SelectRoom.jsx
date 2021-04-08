@@ -3,7 +3,6 @@ import {
   CreateBookingContext,
   CREATE_BOOKING_FORM,
   getRoomCatalogue,
-  updateSelectedRoomAction,
 } from '../../createBookingStore';
 import {formModes} from '../../createBookingStore.jsx';
 import {Container, Row, Col, Button} from 'react-bootstrap';
@@ -14,19 +13,11 @@ import {useHistory} from 'react-router-dom';
 
 export default function SelectRoom({setMode}) {
   // perfrom destructuring on importated vars
-  const {
-    formStore,
-    dispatchBookingForm,
-    handleOnChange,
-    formLocalStorage,
-  } = useContext(CreateBookingContext);
-  const {SELECT_DATE_TIME, FORM_STEP} = formModes;
+  const {formLocalStorage} = useContext(CreateBookingContext);
+  const {FORM_STEP} = formModes;
 
   // set a state comprised of rooms to display to user
   const [roomCatalogue, setRoomCatalogue] = useState([]);
-
-  // (No need for now): set a var for storing the selected room in local storage (to enable persistence)
-  const ROOM_ID = 'ROOM_ID';
 
   // if there isn't storage for form info to persist, create it:
   if (!formLocalStorage) {

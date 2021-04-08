@@ -1,10 +1,7 @@
 import React from 'react';
 import ReactTags from 'react-tag-autocomplete';
 import {Form} from 'react-bootstrap';
-import {
-  CreateBookingContext,
-  updateAttendeesAction,
-} from '../../createBookingStore.jsx';
+import {updateAttendeesAction} from '../../createBookingStore.jsx';
 
 // const {dispatchBookingForm} = useContext(CreateBookingContext);
 

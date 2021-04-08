@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
 import CreateBookingModal from './CreateBookingModal.jsx';
 import {Button, Container, Row, Col} from 'react-bootstrap';
-import {writeStorage, deleteFromStorage} from '@rehooks/local-storage';
+import {deleteFromStorage} from '@rehooks/local-storage';
 import {
   CreateBookingContext,
   CREATE_BOOKING_FORM,
@@ -9,7 +9,6 @@ import {
   formModes,
   updateMeetingStartEndAction,
 } from '../../createBookingStore';
-// import {formModes} from '../../createBookingStore.jsx';
 import {Calendar, momentLocalizer} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
@@ -36,20 +35,11 @@ export default function SelectDateTime({setMode}) {
     ? formLocalStorage.roomId
     : formStore.roomId;
 
-  const {SELECT_DATE_TIME, FORM_STEP} = formModes;
+  const {FORM_STEP} = formModes;
 
   // ============useStates=============================
   const [show, setShow] = useState(false);
   const [allEvents, setAllEvents] = useState([]);
-  const [userSelectionDetails, setuserSelectionDetails] = useState({});
-  const [calendarViews, setCalendarViews] = useState('month');
-
-  // fns to handle open/close of Modal
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
-  const useRefContainer = useRef({});
-  const dict = useRefContainer.current;
 
   // ==================================================
   // ============useEfects=============================
@@ -63,11 +53,14 @@ export default function SelectDateTime({setMode}) {
   useEffect(() => {
     getAllEvents(setAllEvents, roomId, dict);
   }, []);
+  // ==================================================
 
-  const handleNextPage = () => {
-    setMode(SELECT_DATE_TIME);
-    writeStorage(FORM_STEP, SELECT_DATE_TIME);
-  };
+  // fns to handle open/close of Modal
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const useRefContainer = useRef({});
+  const dict = useRefContainer.current;
 
   const history = useHistory();
   const handleCancelForm = () => {
@@ -83,15 +76,11 @@ export default function SelectDateTime({setMode}) {
     if (startTime === '12:00 AM') return;
 
     dispatchBookingForm(updateMeetingStartEndAction(e.start, e.end));
-    // setuserSelectionDetails(e);
     handleShow();
   };
 
   const handleSelectSlot = (e) => {
     const conflictPresent = cancelSelectionIfConflict(e);
-
-    console.log(`conflictPresent is:`);
-    console.log(conflictPresent);
 
     switch (conflictPresent) {
       case true:
@@ -107,8 +96,6 @@ export default function SelectDateTime({setMode}) {
 
   const cancelSelectionIfConflict = (e) => {
     const format = 'hh:mm:ss';
-    console.log('e.start.getTime()');
-    console.log(e.start.getTime());
 
     const eventDate = moment(e.start).format('l');
     const eventStartTime = moment(e.start, format);
@@ -124,11 +111,9 @@ export default function SelectDateTime({setMode}) {
       const currBookingStartTime = moment(currBooking.startTime, format);
       const currBookingEndTime = moment(currBooking.endTime, format);
       if (currBookingStartTime.isBetween(eventStartTime, eventEndTime)) {
-        console.log(`slot is taken======1`);
         return true;
       }
       if (currBookingEndTime.isBetween(eventStartTime, eventEndTime)) {
-        console.log(`slot is taken======2`);
         return true;
       }
     });
@@ -161,11 +146,7 @@ export default function SelectDateTime({setMode}) {
           </Col>
         </Row>
       </Container>
-      <CreateBookingModal
-        userSelectionDetails={userSelectionDetails}
-        show={show}
-        handleClose={handleClose}
-      />
+      <CreateBookingModal show={show} handleClose={handleClose} />
     </>
   );
 }

@@ -12,21 +12,13 @@ import {
   formModes,
   getUsers,
   updateAgendaAction,
-  updateAttendeesAction,
   saveNewMeeting,
 } from '../../createBookingStore';
 
-export default function CreateBookingModal({
-  userSelectionDetails,
-  show,
-  handleClose,
-}) {
+export default function CreateBookingModal({show, handleClose}) {
   // Destructure imported vars
   const {FORM_STEP} = formModes;
-  //set a state to hold info tt must be fed into the autocomplete feature
-  // const [props, setProps] = useState({suggestions: [], tags: []});
-  //set a state change the modal's content when meeting is saved
-  const [isMeetingSaved, setIsMeetingSaved] = useState(false);
+
   // set a state to hold all the mtg attendee tags
   const [tagsProp, setTagsProp] = useState([]);
   const [suggestionsProp, setSuggestionsProp] = useState([]);
@@ -51,18 +43,6 @@ export default function CreateBookingModal({
   // get the mtg date and format it as a str
   const mtgDate = moment(formStore.startTime).format('LL');
 
-  // const onAddition = (tag) => {
-  //   // get the form info that is currently saved in user's local storage
-  //   let newProps = {...props};
-  //   newProps.tags = [...newProps.tags, tag];
-  //   // save to local storage so tt user keeps the attendees even if the dates change
-  //   writeStorage(CREATE_BOOKING_FORM, {
-  //     ...formLocalStorage,
-  //     tags: newProps.tags,
-  //   });
-  // dispatchBookingForm(updateAttendeesAction(newProps.tags));
-  // setProps(newProps);
-  // };
   useEffect(() => {
     writeStorage(CREATE_BOOKING_FORM, {
       ...formLocalStorage,
@@ -70,30 +50,8 @@ export default function CreateBookingModal({
     });
   }, [tagsProp]);
 
-  // },[tagsProp])
-
-  //   const saveFormInfoToLocalStorage = (key, newVal) => {
-  //     writeStorage(key, newVal);
-  //   };
-  // });
-  // const updateStore = dispatchBookingForm(updateAttendeesAction(tagsProp));
-
-  // const onDelete = (i) => {
-  //   let newProps = {...props};
-  //   newProps.tags = newProps.tags.slice(0);
-  //   newProps.tags.splice(i, 1);
-  //   // save to local storage so tt user keeps the attendees even if the dates change
-  //   writeStorage(CREATE_BOOKING_FORM, {
-  //     ...formLocalStorage,
-  //     tags: newProps.tags,
-  //   });
-  //   dispatchBookingForm(updateAttendeesAction(newProps.tags));
-  //   setProps(newProps);
-  // };
   const history = useHistory();
   const handleSave = () => {
-    console.log(`formStore that goes into BE:`);
-    console.log(formStore);
     saveNewMeeting(history, formStore);
     deleteFromStorage(CREATE_BOOKING_FORM);
     deleteFromStorage(FORM_STEP);
@@ -137,7 +95,6 @@ export default function CreateBookingModal({
                     }
                     onChange={(e) => {
                       handleOnChange(updateAgendaAction, e);
-                      console.log(formStore);
                     }}
                     placeholder="Describe the purpose of the meeting"
                     required

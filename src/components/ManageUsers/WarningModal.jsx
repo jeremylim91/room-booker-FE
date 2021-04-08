@@ -7,7 +7,6 @@ export default function WarningModal({
   handleClose,
   taggedUsers,
   setTaggedUsers,
-  forceRender,
 }) {
   const handleDeleteUser = () => {
     const newTaggedUsers = [...taggedUsers];

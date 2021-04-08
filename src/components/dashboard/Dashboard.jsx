@@ -1,15 +1,10 @@
-import React, {useContext, useState, useEffect} from 'react';
-import {Button, Container, Row, Col, Dropdown} from 'react-bootstrap';
-import {
-  RoomBookerContext,
-  getCalendarEventsDisplay,
-  dashboardFilters,
-} from '../../store.jsx';
-import {Calendar, momentLocalizer, Views} from 'react-big-calendar';
+import React, {useState, useEffect} from 'react';
+import {Container, Row, Col, Dropdown} from 'react-bootstrap';
+import {getCalendarEventsDisplay, dashboardFilters} from '../../store.jsx';
+import {Calendar, momentLocalizer} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import '../../styles/calendarStyles.scss';
-import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import EventInfoModal from './EventInfoModal.jsx';
 import {
@@ -17,7 +12,6 @@ import {
   getUpperBoundDate,
 } from '../../utils/calendarRelatedFns.mjs';
 import {getEvents} from './events.jsx';
-import {MyToolbar} from './MyToolbar.jsx';
 import {getUserIdFromCookie} from '../../utils/cookieRelatedFns.mjs';
 
 // Setup the localizer by providing the moment (or globalize) Object
@@ -26,12 +20,7 @@ const localizer = momentLocalizer(moment);
 
 export default function Dashboard() {
   // destructure imported vars
-  const {store, dispatchBookingForm} = useContext(RoomBookerContext);
-
-  const {loggedInUserId} = store;
   const {ALL_MEETINGS, MY_MEETINGS, ANY, ONYX, PARK, HALO} = dashboardFilters;
-
-  // logic that tells app to get roomId if alr in local storage, else get it from global state
 
   // ==============local states=====================
   // manage modal display
@@ -42,39 +31,27 @@ export default function Dashboard() {
 
   const [meetingFilter, setMeetingFilter] = useState(MY_MEETINGS);
   const [resourceFilter, setResourceFilter] = useState(ANY);
+  // set a state that stores the event from the user's selection
+  const [event, setEvent] = useState('');
+
   // ==================================================
   // ============useEfects=============================
   // Redirect user to error page if not signed in
-  useEffect(() => {
-    const loggedInUserId = getUserIdFromCookie();
-    if (!loggedInUserId) {
-      window.location = '/error';
-    }
-  }, []);
+
   // query db to get data to populate calendar; should hve 1. all meetings, 2. all of user's mtgs
   useEffect(() => {
     getCalendarEventsDisplay(setCalendarEventDisplay);
-  }, []);
+  }, [show]);
 
-  // ==================================================
+  // guard clause to redirect user if he is not logged in
+  if (!getUserIdFromCookie()) {
+    window.location = '/error';
+    return;
+  }
 
-  // Meeting details that the user inputs
-  const [userSelectionDetails, setuserSelectionDetails] = useState({});
-
-  // set a state that stores the event from the user's selection
-  const [event, setEvent] = useState('');
-  // ==================================================
-
-  // =======set states to manage modal open/close======
+  // set states to manage modal open/close
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  // =================================================
-
-  // load all events for current user
-  // useEffect(() => {
-  //   console.log(`running use effect in dashboard`);
-  //   getAllEventsByUserId(setAllEventsByUserId);
-  // }, []);
 
   const handleSelectEvent = (e) => {
     setEvent(e);
@@ -161,11 +138,6 @@ export default function Dashboard() {
               startAccessor="startTime"
               endAccessor="endTime"
               onSelectEvent={handleSelectEvent}
-              toolbar={MyToolbar}
-              // selectable={'ignoreEvents'}
-              // onSelectSlot={(e) => {
-              //   handleCreateEvent(e);
-              // }}
               defaultView="month"
               views={['month', 'week', 'day']}
               // Determines the selectable time increments in week and day views

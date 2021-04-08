@@ -26,7 +26,6 @@ export const getUserIdFromCookie = () => {
 export const getIsAdminFromCookie = () => {
   if (document.cookie) {
     const splitCookieVal = document.cookie.split(' ');
-    console.log(splitCookieVal)
     const isAdminStartPos = splitCookieVal[3].indexOf('=') + 1;
     const isAdminEndingPos = isAdminStartPos+11;
     const isAdminVal = splitCookieVal[3].substring(isAdminStartPos, isAdminEndingPos);

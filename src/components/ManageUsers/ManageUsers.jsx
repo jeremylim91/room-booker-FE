@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useContext, useRef} from 'react';
 import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 import {getUsers} from '../../createBookingStore.jsx';
-import {RoomBookerContext, deleteUser, createUser} from '../../store.jsx';
-import {onAddition, onDelete} from '../../utils/autocompleteRelatedFns.mjs';
+import {createUser} from '../../store.jsx';
 import TaggingField from '../HOCs/TaggingField.jsx';
 import WarningModal from './WarningModal.jsx';
 import '../../styles/manageUsers.scss';
@@ -11,23 +10,11 @@ import {getUserIdFromCookie} from '../../utils/cookieRelatedFns.mjs';
 // add and delete users
 export default function ManageUsers() {
   // destructure vars obtained thru useContext
-  const {
-    formStore,
-    dispatchBookingForm,
-    handleOnChange,
-    formLocalStorage,
-  } = useContext(RoomBookerContext);
 
   //set a state to hold info tt must be fed into the autocomplete feature
-  const [props, setProps] = useState({suggestions: [], tags: []}); // set a state that contains all mtg attendees that should be tagged in a given meeting
   const [tagsProp, setTagsProp] = useState([]);
   // set a state containing all users that should be sugested for autocomplete
   const [suggestionsProp, setSuggestionsProp] = useState([]);
-
-  const renderTrigger = useRef(1);
-  const [renderTrigger2, setRenderTrigger2] = useState(true);
-
-  const forceRender = () => setRenderTrigger2(!renderTrigger2);
 
   // set a state to hold user details
   const [newUserDetails, setNewUserDetails] = useState({
@@ -67,7 +54,7 @@ export default function ManageUsers() {
     const newNewUserDetails = {...newUserDetails};
     // else, toggle between true and false depending on curr state
     newNewUserDetails[field] = !newNewUserDetails[field];
-    console.log(e.target.value);
+
     setNewUserDetails(newNewUserDetails);
   };
 
@@ -79,8 +66,6 @@ export default function ManageUsers() {
 
   const handleCreateUser = () => {
     createUser(newUserDetails, handleClose);
-    renderTrigger.current += 1;
-    console.log(renderTrigger);
   };
 
   return (
@@ -205,7 +190,6 @@ export default function ManageUsers() {
         handleClose={handleClose}
         taggedUsers={tagsProp}
         setTaggedUsers={setTagsProp}
-        forceRender={forceRender}
       />
     </div>
   );

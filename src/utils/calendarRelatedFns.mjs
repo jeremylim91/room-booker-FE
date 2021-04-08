@@ -1,4 +1,3 @@
-import moment from 'moment'
 // initialise a date to today's date 
 let today = new Date();
 

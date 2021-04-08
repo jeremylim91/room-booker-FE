@@ -115,8 +115,6 @@ export function createBookingReducer(state, action) {
 // passed to the dispatch function. Actions always contain a type attribute
 // used to identify the action and tell the reducer what logic to run.
 export function updateSelectedRoomAction(roomId) {
-  console.log(`roomId is:`);
-  console.log(roomId);
   return {
     type: UPDATE_SELECTED_ROOM,
     payload: {
@@ -125,7 +123,6 @@ export function updateSelectedRoomAction(roomId) {
   };
 }
 export function updateMeetingStartEndAction(startTime, endTime) {
-  console.log('inside the store action ');
   return {
     type: UPDATE_MEETING_START_END,
     payload: {
@@ -179,8 +176,6 @@ export function CreateBookingProvider({children}) {
   }
 
   const handleOnChange = (actionDescriptor, e) => {
-    console.log(`e.target.value is:`);
-    console.log(e.target.value);
     dispatchBookingForm(actionDescriptor(e.target.value));
     writeStorage(CREATE_BOOKING_FORM, {
       ...formLocalStorage,
@@ -254,24 +249,6 @@ export function getUsers(setLocalState) {
       console.log(err);
     });
 }
-// export function getUsers(setLocalState, newProps) {
-//   return axios
-//     .get(`${BACKEND_URL}/users/findAll`, {withCredentials: true})
-//     .then(({data}) => {
-//       console.log(`data returned to client from getUsers fn`);
-//       console.log(data);
-//       // convert each data's 'username' key to 'name' so tt it will work with the external lib
-//       for (let i = 0; i < data.length; i++) {
-//         data[i].name = data[i]['username'];
-//         delete data[i].username;
-//       }
-//       newProps.suggestions = data;
-//       setLocalState(newProps);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// }
 // get all the events tied to a given room
 export function getAllEvents(setLocalState, roomId, dict) {
   return axios
@@ -289,8 +266,7 @@ export function getAllEvents(setLocalState, roomId, dict) {
 
       data.forEach((singleEvent) => {
         const eventDate = moment(singleEvent.startTime).format('l');
-        // console.log(`testing didct`);
-        // console.log(dict[`${eventDate}`]);
+
         // if the key alr exists, push the singleEvent into the dictionary
         if (dict[`${eventDate}`] !== undefined) {
           dict[`${eventDate}`].push(singleEvent);
@@ -300,9 +276,6 @@ export function getAllEvents(setLocalState, roomId, dict) {
           dict[`${eventDate}`] = [singleEvent];
         }
       });
-      console.log('completed loop');
-      console.log(`dict in loop:`);
-      console.log(dict);
     })
     .catch((err) => {
       console.log(err);

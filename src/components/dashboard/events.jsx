@@ -3,9 +3,6 @@ import {dashboardFilters} from '../../store.jsx';
 const {ALL_MEETINGS, MY_MEETINGS, ANY, ONYX, PARK, HALO} = dashboardFilters;
 
 const manageMeetingFilter = (calEvents, filter) => {
-  console.log(`calEvents is:`);
-  console.log(calEvents);
-
   switch (filter) {
     case ALL_MEETINGS:
       return calEvents.allMeetings;
