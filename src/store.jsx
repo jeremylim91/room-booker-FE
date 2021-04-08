@@ -32,7 +32,7 @@ export const dashboardFilters = {
   ALL_MEETINGS: 'All Meetings',
   MY_MEETINGS: 'My Meetings',
 
-  ANY: 'All resources',
+  ANY: 'All rooms',
   ONYX: 'Onyx',
   PARK: 'Park',
   HALO: 'Halo',
@@ -130,12 +130,7 @@ const Axios = axios.create({
 // Note: It was a deliberate decision to use "isDeleted" as a flag, instead of wiping the user's data from the DB
 // this was done to retain user data that could come in useful for future analysis
 export function deleteUser(usersToDelete, setTaggedUsers) {
-  return axios
-    .put(
-      `${BACKEND_URL}/users/delete`,
-      {usersToDelete},
-      {withCredentials: true}
-    )
+  return Axios.put(`/users/delete`, {usersToDelete})
     .then(({data}) => {
       // remove user as a tag
       setTaggedUsers([]);
@@ -147,8 +142,7 @@ export function deleteUser(usersToDelete, setTaggedUsers) {
 
 // Create a new user by saving his/her details to the db
 export function createUser(localState, handleClose) {
-  return axios
-    .post(`${BACKEND_URL}/users/create`, {localState}, {withCredentials: true})
+  return Axios.post(`/users/create`, {localState})
     .then(({data}) => {
       alert('New user created successfully!');
       handleClose();
@@ -160,8 +154,7 @@ export function createUser(localState, handleClose) {
 
 // check if inputted credentials match our db records, create user session if so
 export function validateUserSignIn(signInData, dispatch) {
-  axios
-    .put(`${BACKEND_URL}/signIn`, signInData, {withCredentials: true})
+  Axios.put(`/signIn`, signInData)
     .then(({data}) => {
       dispatch(setLoggedInEmail(data.user.email));
       dispatch(setLoggedInUsername(data.user.username));
@@ -172,10 +165,7 @@ export function validateUserSignIn(signInData, dispatch) {
 
 // get all meetings that are associated w/ the user (this shld include user-booke AND user-tagged)
 export function getAllEventsByUserId(setAllEventsByUserId) {
-  return axios
-    .get(`${BACKEND_URL}/bookings/bookingsByUserId`, {
-      withCredentials: true,
-    })
+  return Axios.get(`/bookings/bookingsByUserId`)
     .then(({data}) => {
       // convert all dates to js dates, else it breaks the calendar
       Object.keys(data).forEach((key) =>
@@ -232,10 +222,7 @@ export async function getCalendarEventsDisplay(setCalendarEventDisplay) {
 
 // query the db to get list of mtg attendees acc to a booking id.
 export function getAllAttendeesByBookingId(setMtgAttendees, bookingId) {
-  return axios
-    .get(`${BACKEND_URL}/bookings/mtgAttendees/${bookingId}`, {
-      withCredentials: true,
-    })
+  return Axios.get(`/bookings/mtgAttendees/${bookingId}`)
     .then(({data}) => {
       // convert each data's 'username' key to 'name' so tt it will work with the external lib
       for (let i = 0; i < data.length; i += 1) {
