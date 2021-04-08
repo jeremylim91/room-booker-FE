@@ -6,9 +6,11 @@ import {
   updateSelectedRoomAction,
 } from '../../createBookingStore';
 import {formModes} from '../../createBookingStore.jsx';
-import Button from 'react-bootstrap/Button';
+import {Container, Row, Col, Button} from 'react-bootstrap';
 // import {handleNextPage, handleCancelForm} from '../../utils/formRelatedFns.mjs';
 import {writeStorage, deleteFromStorage} from '@rehooks/local-storage';
+import RoomDisplay from './RoomDisplay.jsx';
+import {useHistory} from 'react-router-dom';
 
 export default function SelectRoom({setMode}) {
   // perfrom destructuring on importated vars
@@ -36,70 +38,39 @@ export default function SelectRoom({setMode}) {
     getRoomCatalogue(setRoomCatalogue);
   }, []);
 
-  const handleRoomSelection = (roomId) => {
-    dispatchBookingForm(updateSelectedRoomAction(roomId));
-    // add the selected rm to local storage
-    //  there doesn't seem to be a need to store the cal events in local storage for now
-    writeStorage(CREATE_BOOKING_FORM, {
-      ...formLocalStorage,
-      roomId: roomId,
-    });
-  };
-
   const DisplayRooms = () => {
     return roomCatalogue.map((room, idx) => {
       return (
-        <div className="col-4">
-          <h2>{room.room_name}</h2>
-          <p>Capacity: {room.max_occupancy}</p>
-          <button
-            type="submit"
-            onClick={(e) => {
-              // the selected room is in the storage, read from storage
-              handleRoomSelection(room.id);
-            }}
-            style={{border: 'none'}}>
-            <img
-              src={`${room.thumbnail}`}
-              alt="respective room"
-              style={{maxWidth: '100%'}}></img>
-          </button>
-        </div>
+        <RoomDisplay
+          roomPhotoUrl={room.thumbnail}
+          roomName={room.roomName}
+          capacity={room.maxOccupancy}
+          roomId={room.id}
+          setMode={setMode}
+        />
       );
     });
   };
 
+  const history = useHistory();
+
   const handleCancelForm = () => {
-    // setMode('ABOUT_ITEMS');
-    window.location = '/';
     deleteFromStorage(CREATE_BOOKING_FORM);
     deleteFromStorage(FORM_STEP);
-  };
-  const handleNextPage = () => {
-    setMode(SELECT_DATE_TIME);
-    writeStorage(FORM_STEP, SELECT_DATE_TIME);
+    history.push('/');
   };
 
   return (
-    <>
-      <div className="container">
-        {/* <div className="row">
-          <div className="col">asf</div>
-        </div> */}
-        <DisplayRooms />
+    <Container className="mt-2 mb-3">
+      <DisplayRooms />
 
-        <div className="row">
-          <div className="col">
-            <Button onClick={handleNextPage}> Next</Button>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col">
-            <Button onClick={handleCancelForm}>Cancel</Button>
-          </div>
-        </div>
-      </div>
-    </>
+      <Row>
+        <Col className="d-flex justify-content-center m-3">
+          <Button variant="outline-danger" onClick={handleCancelForm}>
+            Cancel
+          </Button>
+        </Col>
+      </Row>
+    </Container>
   );
 }

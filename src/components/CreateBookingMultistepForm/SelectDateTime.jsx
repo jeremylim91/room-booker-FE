@@ -1,6 +1,6 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useRef} from 'react';
 import CreateBookingModal from './CreateBookingModal.jsx';
-import Button from 'react-bootstrap/Button';
+import {Button, Container, Row, Col} from 'react-bootstrap';
 import {writeStorage, deleteFromStorage} from '@rehooks/local-storage';
 import {
   CreateBookingContext,
@@ -10,7 +10,7 @@ import {
   updateMeetingStartEndAction,
 } from '../../createBookingStore';
 // import {formModes} from '../../createBookingStore.jsx';
-import {Calendar, momentLocalizer, Views} from 'react-big-calendar';
+import {Calendar, momentLocalizer} from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import '../../styles/calendarStyles.scss';
@@ -18,6 +18,8 @@ import {
   getLowerBoundDate,
   getUpperBoundDate,
 } from '../../utils/calendarRelatedFns.mjs';
+import {getUserIdFromCookie} from '../../utils/cookieRelatedFns.mjs';
+import {useHistory} from 'react-router-dom';
 
 // Setup the localizer by providing the moment (or globalize) Object
 // to the correct localizer.
@@ -36,36 +38,103 @@ export default function SelectDateTime({setMode}) {
 
   const {SELECT_DATE_TIME, FORM_STEP} = formModes;
 
-  // local states
+  // ============useStates=============================
   const [show, setShow] = useState(false);
   const [allEvents, setAllEvents] = useState([]);
   const [userSelectionDetails, setuserSelectionDetails] = useState({});
+  const [calendarViews, setCalendarViews] = useState('month');
 
   // fns to handle open/close of Modal
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const useRefContainer = useRef({});
+  const dict = useRefContainer.current;
+
+  // ==================================================
+  // ============useEfects=============================
+  // Redirect user to error page if not signed in
   useEffect(() => {
-    getAllEvents(setAllEvents, roomId);
+    const loggedInUserId = getUserIdFromCookie();
+    if (!loggedInUserId) {
+      window.location = '/error';
+    }
   }, []);
+  useEffect(() => {
+    getAllEvents(setAllEvents, roomId, dict);
+  }, []);
+
   const handleNextPage = () => {
     setMode(SELECT_DATE_TIME);
     writeStorage(FORM_STEP, SELECT_DATE_TIME);
   };
 
+  const history = useHistory();
   const handleCancelForm = () => {
-    window.location = '/';
     deleteFromStorage(CREATE_BOOKING_FORM);
     deleteFromStorage(FORM_STEP);
+    history.push('/');
   };
 
   // this fn runs whenever a user selects a timeslot on the calendar
   const handleCreateEvent = (e) => {
-    console.log(e.start);
+    // short-term soln to prevent booking creation in month view: disallow modal pop-up if start time is 12 am (i.e. the default)
+    const startTime = moment(e.start).format('LT');
+    if (startTime === '12:00 AM') return;
+
     dispatchBookingForm(updateMeetingStartEndAction(e.start, e.end));
     // setuserSelectionDetails(e);
     handleShow();
   };
+
+  const handleSelectSlot = (e) => {
+    const conflictPresent = cancelSelectionIfConflict(e);
+
+    console.log(`conflictPresent is:`);
+    console.log(conflictPresent);
+
+    switch (conflictPresent) {
+      case true:
+        break;
+      case false:
+        handleCreateEvent(e);
+        break;
+      default:
+        handleCreateEvent(e);
+        break;
+    }
+  };
+
+  const cancelSelectionIfConflict = (e) => {
+    const format = 'hh:mm:ss';
+    console.log('e.start.getTime()');
+    console.log(e.start.getTime());
+
+    const eventDate = moment(e.start).format('l');
+    const eventStartTime = moment(e.start, format);
+    const eventEndTime = moment(e.end, format);
+
+    const bookingsForCurrDate = dict[`${eventDate}`];
+
+    // guard clause
+    if (bookingsForCurrDate === undefined) return;
+
+    // loop thru events of a particuarl date to to see if there are time conflicts
+    bookingsForCurrDate.forEach((currBooking) => {
+      const currBookingStartTime = moment(currBooking.startTime, format);
+      const currBookingEndTime = moment(currBooking.endTime, format);
+      if (currBookingStartTime.isBetween(eventStartTime, eventEndTime)) {
+        console.log(`slot is taken======1`);
+        return true;
+      }
+      if (currBookingEndTime.isBetween(eventStartTime, eventEndTime)) {
+        console.log(`slot is taken======2`);
+        return true;
+      }
+    });
+    return false;
+  };
+
   return (
     <>
       <Calendar
@@ -75,30 +144,23 @@ export default function SelectDateTime({setMode}) {
         startAccessor="startTime"
         endAccessor="endTime"
         selectable={'ignoreEvents'}
-        onSelectSlot={(e) => {
-          handleCreateEvent(e);
-        }}
-        onSelectEvent={(event) => alert(event.title)}
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={(event) => alert(event.agenda)}
         defaultView="week"
         views={['month', 'week', 'day']}
-        // Determines the selectable time increments in week and day views
         step={30}
-        // timeslots={30}
         min={getLowerBoundDate()} // 8.00 AM
-        max={getUpperBoundDate()} // Max will be 6.00 PM!
+        max={getUpperBoundDate()} // Max will be 6.00 PM
       />
-      <div className="container">
-        <div className="row">
-          <div className="col">
-            <Button onClick={handleNextPage}> Next</Button>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col">
-            <Button onClick={handleCancelForm}> Cancel</Button>
-          </div>
-        </div>
-      </div>
+      <Container fluid className="mt-2">
+        <Row>
+          <Col className="d-flex justify-content-center m-3">
+            <Button variant="outline-danger" onClick={handleCancelForm}>
+              Cancel
+            </Button>
+          </Col>
+        </Row>
+      </Container>
       <CreateBookingModal
         userSelectionDetails={userSelectionDetails}
         show={show}

@@ -1,10 +1,8 @@
 import React, {useState, useEffect, useContext} from 'react';
 // import formModes from './FormModes.mjs'
-import {writeStorage, useLocalStorage} from '@rehooks/local-storage';
+import {useLocalStorage} from '@rehooks/local-storage';
 import SelectRoom from './SelectRoom.jsx';
 import SelectDateTime from './SelectDateTime.jsx';
-import InsertDetails from './InsertDetails.jsx';
-import Confirmation from './Confirmation.jsx';
 
 // import LoadNewListing from './LoadNewListing.jsx.js';
 import {
@@ -18,13 +16,7 @@ import {
 
 export default function CreateBookingMain() {
   // Modes of the form
-  const {
-    SELECT_ROOM,
-    SELECT_DATE_TIME,
-    INSERT_DETAILS,
-    CONFIRMATION,
-    FORM_STEP,
-  } = formModes;
+  const {SELECT_ROOM, SELECT_DATE_TIME, INSERT_DETAILS, FORM_STEP} = formModes;
   // Control the state of the multi-step form
   const [mode, setMode] = useState(SELECT_ROOM);
 
@@ -52,10 +44,7 @@ export default function CreateBookingMain() {
         return <SelectRoom setMode={setMode} />;
       case SELECT_DATE_TIME:
         return <SelectDateTime setMode={setMode} />;
-      case INSERT_DETAILS:
-        return <InsertDetails setMode={setMode} />;
-      case CONFIRMATION:
-        return <Confirmation setMode={setMode} />;
+
       default:
         return null;
     }
