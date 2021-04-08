@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import ReactTags from 'react-tag-autocomplete';
 import {Form} from 'react-bootstrap';
 import {
@@ -15,9 +15,6 @@ export default function TaggingField({
   setTagsProp,
   dispatchBookingForm,
 }) {
-  console.log(`tagsProp in the modal is:`);
-  console.log(tagsProp);
-
   const onAddition = (tag) => {
     const newTagsProp = [...tagsProp, tag];
     // Save to createBoookingStore via the dispatch fn
