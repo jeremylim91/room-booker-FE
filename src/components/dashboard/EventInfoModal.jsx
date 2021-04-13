@@ -15,7 +15,6 @@ import TaggingField from '../HOCs/TaggingField.jsx';
 import {getUsers} from '../../createBookingStore.jsx';
 
 export default function EventInfoModal({show, handleClose, event}) {
-  const [mtgIsDeleted, setMtgIsDeleted] = useState(false);
   const [agendaInputField, setAgendaInputField] = useState(event.agenda);
   // set a state that contains all mtg attendees that should be tagged in a given meeting
   const [tagsProp, setTagsProp] = useState([]);
@@ -24,7 +23,7 @@ export default function EventInfoModal({show, handleClose, event}) {
 
   useEffect(() => {
     getAllAttendeesByBookingId(setTagsProp, event.id);
-  }, [mtgIsDeleted, handleClose]);
+  }, [handleClose]);
   useEffect(() => {
     getUsers(setSuggestionsProp);
   }, [handleClose]);
